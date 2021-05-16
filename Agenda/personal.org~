@@ -1,0 +1,17 @@
+
+#+TITLE Personal agenda file
+
+* Tasks
+** TODO Help Paulo with his C code
+   SCHEDULED: <2021-04-22 qui> DEADLINE: <2021-04-22 qui>
+** TODO Read LGH vol 1 along with Daniel
+   DEADLINE: <2021-04-23 sex>
+** PROJ Talk to Arthur about the Unity project
+   SCHEDULED: <2021-04-23 sex> DEADLINE: <2021-04-25 dom>
+** TODO Resume the EU4 campaign with Daniel and João
+** TODO Send the monthly billing from May to the accountant
+   SCHEDULED: <2021-04-24 sáb>
+   DEADLINE: <2021-04-23 sex>
+** TODO Make a pull request to [Fable.JsonProvider](https://github.com/fable-compiler/Fable.JsonProvider)
+   SCHEDULED: <2021-04-24 Sat>
+   

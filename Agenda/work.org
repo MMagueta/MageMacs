@@ -1,0 +1,5 @@
+#+TITLE Work agenda File
+
+* Tasks
+Add here a work agenda!
+You may customize the tags and bind the files @settings.org
