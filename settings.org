@@ -1,9 +1,9 @@
 * MELPA
 #+BEGIN_SRC emacs-lisp
-  ;;  (require 'package)
-  ;;  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-  ;;  (unless package-archive-contents (package-refresh-contents))
-  ;;  (package-initialize)
+  (require 'package)
+    (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+    (unless package-archive-contents (package-refresh-contents))
+    (package-initialize)
 
   (unless (package-installed-p 'use-package)
     (package-refresh-contents)
@@ -285,27 +285,22 @@
 #+END_SRC
 * Tooling
 ** F#
-*** F#
-  #+BEGIN_SRC emacs-lisp
-  ;;; Initialize MELPA
-  (require 'package)
-  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-  (unless package-archive-contents (package-refresh-contents))
-  (package-initialize)
-
-  ;;; Install fsharp-mode
-  (unless (package-installed-p 'fsharp-mode)
-    (package-install 'fsharp-mode))
-
-  (require 'fsharp-mode)
-  
-  ;;; Install eglot-fsharp
-  (unless (package-installed-p 'eglot-fsharp)
-    (package-install 'eglot-fsharp))
-
-  (require 'eglot-fsharp)
-
-  #+END_SRC
+ #+BEGIN_SRC emacs-lisp
+ ;;; Initialize MELPA
+ (require 'package)
+ (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+ (unless package-archive-contents (package-refresh-contents))
+ (package-initialize)
+ ;;; Install fsharp-mode
+ (unless (package-installed-p 'fsharp-mode)
+   (package-install 'fsharp-mode))
+ (require 'fsharp-mode)
+ 
+ ;;; Install eglot-fsharp
+ (unless (package-installed-p 'eglot-fsharp)
+   (package-install 'eglot-fsharp))
+ (require 'eglot-fsharp)
+ #+END_SRC
 ** Python
  #+BEGIN_SRC emacs-lisp
    (defun run-buffer ()
@@ -313,7 +308,6 @@
    (shell-command (concat "python3 " buffer-file-name)))
    (global-set-key (kbd "<f9>") 'run-buffer)
  #+END_SRC
-
 ** Prolog
    #+BEGIN_SRC emacs-lisp
      (load "./prolog.el")
@@ -337,7 +331,6 @@
     (eshell-syntax-highlighting-global-mode +1))
 (eshell-syntax-highlighting-global-mode)
 #+END_SRC
-
 * Org
 #+BEGIN_SRC emacs-lisp
   (require 'org)
@@ -346,42 +339,21 @@
   (setq org-log-done 'time)
   (setq org-agenda-files (list "~/.emacs.d/Agenda/work.org" 
 			       "~/.emacs.d/Agenda/personal.org"))
-  (setq org-todo-keywords '((sequence "TODO(t)" "PROJ(p)" "STUDY(s)" "|" "DONE(d)" "CANCELLED(c)")))
+  (setq org-todo-keywords '((sequence "CHORE(c)" "PROJ(p)" "STUDY(s)" "|" "DONE(d)" "CANCELLED(c)")))
   (unless (package-installed-p 'org-bullets)
       (package-install 'org-bullets))
   (require 'org-bullets)
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 #+END_SRC
-
 * Project
-  #+BEGIN_SRC emacs_lisp
+  #+BEGIN_SRC emacs-lisp
+  (unless (package-installed-p 'projectile)
+    (package-install 'projectile))
+  (require 'projectile)
+ 
   (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+  ;;(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
   (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-
-  (use-package dired-sidebar
-  :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
-  :ensure t
-  :commands (dired-sidebar-toggle-sidebar)
-  :init
-  (add-hook 'dired-sidebar-mode-hook
-            (lambda ()
-              (unless (file-remote-p default-directory)
-                (auto-revert-mode))))
-  :config
-  (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
-  (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
-
-  (setq dired-sidebar-subtree-line-prefix "__")
-  (setq dired-sidebar-theme 'vscode)
-  (setq dired-sidebar-use-term-integration t)
-  (setq dired-sidebar-use-custom-font t))
-  (defun sidebar-toggle ()
-  "Toggle both `dired-sidebar' and `ibuffer-sidebar'."
-  (interactive)
-  (dired-sidebar-toggle-sidebar)
-  (ibuffer-sidebar-toggle-sidebar))
-
   #+END_SRC
 * Styling
 ** Startup Screen
@@ -391,12 +363,10 @@
     :diminish dashboard-mode
     :config
     (setq dashboard-banner-logo-title "Welcome to MageMacs, GNU Emacs customized by Marcos Magueta")
-    (setq dashboard-startup-banner "/home/mmagueta/.emacs.d/logo.png")
+    (setq dashboard-startup-banner "~/.emacs.d/logo.png")
     (setq dashboard-items '((recents  . 10)
                             (bookmarks . 10)))
     (dashboard-setup-startup-hook))
-
-
  #+END_SRC
 ** Interface Options
  #+BEGIN_SRC emacs-lisp
@@ -407,12 +377,10 @@
    (display-battery-mode t)
    (display-time-mode t)
  #+END_SRC 
-
 ** Ergonomics
  #+BEGIN_SRC emacs-lisp
    (shell-command "xmodmap -e 'keysym Control_L = Control_R'")
  #+END_SRC
-
 * EXWM
  #+BEGIN_SRC emacs-lisp
    (unless (package-installed-p 'exwm)
@@ -421,3 +389,9 @@
    (require 'exwm-config)
    (exwm-config-default)
  #+END_SRC
+** dmenu
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'dmenu)
+       (package-install 'dmenu))
+     (require 'dmenu)
+   #+END_SRC
