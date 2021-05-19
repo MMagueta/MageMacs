@@ -12,6 +12,60 @@
   (require 'use-package)
   (setq use-package-always-ensure t)
 #+END_SRC
+* EXWM
+ #+BEGIN_SRC emacs-lisp
+   (fringe-mode 1)
+
+   ;; You are strongly encouraged to enable something like `ido-mode' to alter
+   ;; the default behavior of 'C-x b', or you will take great pains to switch
+   ;; to or back from a floating frame (remember 'C-x 5 o' if you refuse this
+   ;; proposal however).
+   ;; You may also want to call `exwm-config-ido' later (see below).
+   (ido-mode 1)
+
+   ;; Emacs server is not required to run EXWM but it has some interesting uses
+   ;; (see next section).
+   (server-start)
+
+   (require 'exwm)
+
+   (require 'exwm-config)
+   (exwm-config-ido)
+
+
+   (require 'exwm-randr)
+   (setq exwm-randr-workspace-output-plist '(0 "HDMI-1" 1 "eDP-1"))
+   (add-hook 'exwm-randr-screen-change-hook
+	   (lambda ()
+	     (start-process-shell-command
+	     "xrandr" nil "xrandr --output HDMI-1 --mode 1920x1080 --primary --left-of eDP-1 --output eDP1 --off --mode 1366x768")))
+	     ;;"xrandr" nil "xrandr --output eDP1 --mode 1366x768")))
+   (exwm-randr-enable)
+
+   ;; Set the initial number of workspaces (they can also be created later).
+   (setq exwm-workspace-number 2)
+
+   (add-hook 'exwm-update-class-hook
+	     (lambda ()
+	       (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+			   (string= "gimp" exwm-instance-name))
+		 (exwm-workspace-rename-buffer exwm-class-name))))
+   (add-hook 'exwm-update-title-hook
+	     (lambda ()
+	       (when (or (not exwm-instance-name)
+			 (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+			 (string= "gimp" exwm-instance-name))
+		 (exwm-workspace-rename-buffer exwm-title))))
+
+   (exwm-enable)
+
+ #+END_SRC
+** DMenu
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'dmenu)
+       (package-install 'dmenu))
+     (require 'dmenu)
+   #+END_SRC
 * Theme
 #+BEGIN_SRC emacs-lisp
 ;;; snowish-theme.el --- snowish theme
@@ -286,20 +340,31 @@
 * Tooling
 ** F#
  #+BEGIN_SRC emacs-lisp
- ;;; Initialize MELPA
- (require 'package)
- (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
- (unless package-archive-contents (package-refresh-contents))
- (package-initialize)
- ;;; Install fsharp-mode
- (unless (package-installed-p 'fsharp-mode)
-   (package-install 'fsharp-mode))
- (require 'fsharp-mode)
- 
- ;;; Install eglot-fsharp
- (unless (package-installed-p 'eglot-fsharp)
-   (package-install 'eglot-fsharp))
- (require 'eglot-fsharp)
+   ;;; Install fsharp-mode
+   (unless (package-installed-p 'fsharp-mode)
+     (package-install 'fsharp-mode))
+   (require 'fsharp-mode)
+
+   ;;; Install eglot-fsharp
+   (unless (package-installed-p 'eglot-fsharp)
+     (package-install 'eglot-fsharp))
+   (require 'eglot-fsharp)
+
+   ;;; Install company mode to autocomplete
+   (unless (package-installed-p 'company-quickhelp)
+     (package-install 'company-quickhelp))
+   (require 'company-quickhelp)
+
+   (add-to-list 'auto-mode-alist '("\\.fs$" . fsharp-mode))     
+
+   (company-quickhelp-mode t)
+   (setq company-quickhelp-delay '1.0)
+
+   (load "~/.emacs.d/ob-fsharp.el")
+
+   (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((fsharp . t)))
  #+END_SRC
 ** Python
  #+BEGIN_SRC emacs-lisp
@@ -307,6 +372,9 @@
    (interactive)
    (shell-command (concat "python3 " buffer-file-name)))
    (global-set-key (kbd "<f9>") 'run-buffer)
+   (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((python . t)))
  #+END_SRC
 ** Prolog
    #+BEGIN_SRC emacs-lisp
@@ -320,6 +388,14 @@
        (package-install 'magit))
      (require 'magit)
      (global-set-key (kbd "C-x g") 'magit-status)
+   #+END_SRC
+** Helm
+   #+BEGIN_SRC emacs-lisp
+   ;; start helm-help mode (a version of M-x which shows documentaiton)
+   (global-set-key (kbd "M-x") 'helm-M-x)
+   ;; better buffer navigation w/ help
+   (global-set-key (kbd "M-b") 'helm-buffers-list)
+   (helm-mode 1)
    #+END_SRC
 * Shell
 #+BEGIN_SRC emacs-lisp
@@ -401,22 +477,18 @@
    (add-hook 'prog-mode-hook 'linum-mode)
    (display-battery-mode t)
    (display-time-mode t)
+   (unless (package-installed-p 'vscode-icon)
+   (package-install 'vscode-icon))
+   (require 'vscode-icon)
  #+END_SRC 
 ** Ergonomics
  #+BEGIN_SRC emacs-lisp
    (shell-command "xmodmap -e 'keysym Control_L = Control_R'")
  #+END_SRC
-* EXWM
- #+BEGIN_SRC emacs-lisp
-   (unless (package-installed-p 'exwm)
-      (package-install 'exwm))
-   (require 'exwm)
-   (require 'exwm-config)
-   (exwm-config-default)
- #+END_SRC
-** dmenu
+
+** Fonts
    #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'dmenu)
-       (package-install 'dmenu))
-     (require 'dmenu)
+   (use-package fira-code-mode
+   :custom (fira-code-mode-disabled-ligatures '("[]" "#{" "#(" "#_" "#_(" "x"))
+   :hook prog-mode)
    #+END_SRC
