@@ -68,10 +68,16 @@
    #+END_SRC
 * Theme
 #+BEGIN_SRC emacs-lisp
-
-;;(load-theme 'blue-mood t)
-(load-theme 'afternoon t)
-
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+;;(load-theme 'pastelmac t)
+;;(load-theme 'snowish t)
+;;(load-theme 'vim-colors t)
+;;(load-theme 'hydandata-light t)
+;;(load-theme 'resolve t)
+;;(load-theme 'mac-classic t)
+(load-theme 'dracula t)
+;;(load-theme 'afternoon t)
+;;(load-theme 'occidental t)
 #+END_SRC
 * Tooling
 ** F#
@@ -144,6 +150,13 @@
    (global-set-key (kbd "M-b") 'helm-buffers-list)
    (helm-mode 1)
    #+END_SRC
+** Multiple Cursors
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'multiple-cursors)
+       (package-install 'multiple-cursors))
+     (require 'multiple-cursors)
+     (global-set-key (kbd "C-c m c") 'mc/edit-lines)
+   #+END_SRC
 * Shell
 #+BEGIN_SRC emacs-lisp
   (use-package eshell-syntax-highlighting
@@ -211,7 +224,7 @@
     :diminish dashboard-mode
     :config
     (setq dashboard-banner-logo-title "Welcome to MageMacs, GNU Emacs customized by Marcos Magueta")
-    (setq dashboard-startup-banner "~/.emacs.d/logo.png")
+    (setq dashboard-startup-banner "~/.emacs.d/emacs.svg")
     (setq dashboard-items '((recents  . 10)
                             (bookmarks . 10)))
     (dashboard-setup-startup-hook))
@@ -245,4 +258,10 @@
      (add-hook 'fsharp-mode-hook
                (lambda ()
                  (fsharp-enable-prettify-symbols)))
+   #+END_SRC
+
+** Powerline
+   #+BEGIN_SRC emacs-lisp
+     (require 'powerline)
+     (powerline-default-theme)
    #+END_SRC
