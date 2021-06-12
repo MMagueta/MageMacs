@@ -124,11 +124,6 @@
                        (interactive)
                        (insert ":- use_module(library()).")
                        (forward-char -3)))
-
-     (unless (package-installed-p 'ob-prolog)
-       (package-install 'ob-prolog))
-     (require 'ob-prolog)
-
      (add-to-list 'load-path "./ob-prolog.el")
 
    #+END_SRC
