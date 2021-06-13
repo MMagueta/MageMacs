@@ -14,8 +14,6 @@
 #+END_SRC
 * EXWM
  #+BEGIN_SRC emacs-lisp
-   (fringe-mode 1)
-
    ;; You are strongly encouraged to enable something like `ido-mode' to alter
    ;; the default behavior of 'C-x b', or you will take great pains to switch
    ;; to or back from a floating frame (remember 'C-x 5 o' if you refuse this
@@ -34,11 +32,11 @@
 
 
    (require 'exwm-randr)
-   (setq exwm-randr-workspace-output-plist '(0 "HDMI-1" 1 "eDP-1"))
+   (setq exwm-randr-workspace-output-plist '(0 "HDMI1" 1 "eDP1"))
    (add-hook 'exwm-randr-screen-change-hook
 	   (lambda ()
 	     (start-process-shell-command
-	     "xrandr" nil "xrandr --output HDMI-1 --mode 1920x1080 --primary --left-of eDP-1 --output eDP1 --off --mode 1366x768")))
+	     "xrandr" nil "xrandr --output HDMI1 --mode 1920x1080 --primary --left-of eDP1 --output eDP1 --mode 1366x768")))
 	     ;;"xrandr" nil "xrandr --output eDP1 --mode 1366x768")))
    (exwm-randr-enable)
 
@@ -223,6 +221,9 @@
     (setq dashboard-items '((recents  . 10)
                             (bookmarks . 10)))
     (dashboard-setup-startup-hook))
+
+    (fringe-mode 1)
+    (scroll-bar-mode -1)
  #+END_SRC
 ** Interface Options
  #+BEGIN_SRC emacs-lisp
@@ -257,6 +258,8 @@
 
 ** Powerline
    #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'powerline)
+     (package-install 'powerline))
      (require 'powerline)
      (powerline-default-theme)
    #+END_SRC
