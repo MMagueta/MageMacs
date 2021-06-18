@@ -36,12 +36,18 @@
    (add-hook 'exwm-randr-screen-change-hook
 	   (lambda ()
 	     (start-process-shell-command
-	     "xrandr" nil "xrandr --output HDMI1 --mode 1920x1080 --primary --left-of eDP1 --output eDP1 --mode 1366x768")))
+	     "xrandr" nil "xrandr --output HDMI1 --mode 1920x1080 --primary --left-of eDP1 --output eDP1 --off")))
+             ;;"xrandr" nil "xrandr --output HDMI1 --mode 1920x1080 --primary --left-of eDP1 --output eDP1 --mode 1366x768")))
 	     ;;"xrandr" nil "xrandr --output eDP1 --mode 1366x768")))
    (exwm-randr-enable)
 
    ;; Set the initial number of workspaces (they can also be created later).
    (setq exwm-workspace-number 2)
+
+   (setq exwm-input-global-keys
+        `(
+          ([?\s-d] . dmenu)
+          ([?\s-e] . eshell)))
 
    (add-hook 'exwm-update-class-hook
 	     (lambda ()
