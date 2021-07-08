@@ -79,11 +79,17 @@
 ;;(load-theme 'hydandata-light t)
 ;;(load-theme 'resolve t)
 ;;(load-theme 'mac-classic t)
-(load-theme 'dracula t)
+;;(load-theme 'dracula t)
 ;;(load-theme 'afternoon t)
-;;(load-theme 'occidental t)
+(load-theme 'occidental t)
 #+END_SRC
 * Tooling
+** Common Lisp
+ #+BEGIN_SRC emacs-lisp
+   (unless (package-installed-p 'slime)
+     (package-install 'slime))
+   (require 'slime)
+ #+END_SRC
 ** F#
  #+BEGIN_SRC emacs-lisp
    ;;; Install fsharp-mode
@@ -247,21 +253,6 @@
  #+BEGIN_SRC emacs-lisp
    (shell-command "xmodmap -e 'keysym Control_L = Control_R'")
  #+END_SRC
-
-** Fonts
-   #+BEGIN_SRC emacs-lisp
-     (defun fsharp-enable-prettify-symbols ()
-       (let ((alist '(("->" . ?→)
-                      ("<-" . ?←)
-                      ("|>" . ?⊳)
-                      ("<|" . ?⊲))))
-         (setq-local prettify-symbols-alist alist)))
-     
-     (add-hook 'fsharp-mode-hook
-               (lambda ()
-                 (fsharp-enable-prettify-symbols)))
-   #+END_SRC
-
 ** Powerline
    #+BEGIN_SRC emacs-lisp
      (unless (package-installed-p 'powerline)
