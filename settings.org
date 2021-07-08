@@ -14,54 +14,54 @@
 #+END_SRC
 * EXWM
  #+BEGIN_SRC emacs-lisp
-   ;; You are strongly encouraged to enable something like `ido-mode' to alter
-   ;; the default behavior of 'C-x b', or you will take great pains to switch
-   ;; to or back from a floating frame (remember 'C-x 5 o' if you refuse this
-   ;; proposal however).
-   ;; You may also want to call `exwm-config-ido' later (see below).
-   (ido-mode 1)
+   ;; ;; You are strongly encouraged to enable something like `ido-mode' to alter
+   ;; ;; the default behavior of 'C-x b', or you will take great pains to switch
+   ;; ;; to or back from a floating frame (remember 'C-x 5 o' if you refuse this
+   ;; ;; proposal however).
+   ;; ;; You may also want to call `exwm-config-ido' later (see below).
+   ;; (ido-mode 1)
 
-   ;; Emacs server is not required to run EXWM but it has some interesting uses
-   ;; (see next section).
-   (server-start)
+   ;; ;; Emacs server is not required to run EXWM but it has some interesting uses
+   ;; ;; (see next section).
+   ;; (server-start)
 
-   (require 'exwm)
+   ;; (require 'exwm)
 
-   (require 'exwm-config)
-   (exwm-config-ido)
+   ;; (require 'exwm-config)
+   ;; (exwm-config-ido)
 
 
-   (require 'exwm-randr)
-   (setq exwm-randr-workspace-output-plist '(0 "HDMI1" 1 "eDP1"))
-   (add-hook 'exwm-randr-screen-change-hook
-	   (lambda ()
-	     (start-process-shell-command
-	     "xrandr" nil "xrandr --output HDMI1 --mode 1920x1080 --primary --left-of eDP1 --output eDP1 --off")))
-             ;;"xrandr" nil "xrandr --output HDMI1 --mode 1920x1080 --primary --left-of eDP1 --output eDP1 --mode 1366x768")))
-	     ;;"xrandr" nil "xrandr --output eDP1 --mode 1366x768")))
-   (exwm-randr-enable)
+   ;; (require 'exwm-randr)
+   ;; (setq exwm-randr-workspace-output-plist '(0 "HDMI1" 1 "eDP1"))
+   ;; (add-hook 'exwm-randr-screen-change-hook
+   ;; 	(lambda ()
+   ;; 	  (start-process-shell-command
+   ;; 	  "xrandr" nil "xrandr --output HDMI1 --mode 1920x1080 --primary --left-of eDP1 --output eDP1 --off")))
+   ;;           ;;"xrandr" nil "xrandr --output HDMI1 --mode 1920x1080 --primary --left-of eDP1 --output eDP1 --mode 1366x768")))
+   ;; 	  ;;"xrandr" nil "xrandr --output eDP1 --mode 1366x768")))
+   ;; (exwm-randr-enable)
 
-   ;; Set the initial number of workspaces (they can also be created later).
-   (setq exwm-workspace-number 2)
+   ;; ;; Set the initial number of workspaces (they can also be created later).
+   ;; (setq exwm-workspace-number 2)
 
-   (setq exwm-input-global-keys
-        `(
-          ([?\s-d] . dmenu)
-          ([?\s-e] . eshell)))
+   ;; (setq exwm-input-global-keys
+   ;;      `(
+   ;;        ([?\s-d] . dmenu)
+   ;;        ([?\s-e] . eshell)))
 
-   (add-hook 'exwm-update-class-hook
-	     (lambda ()
-	       (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-			   (string= "gimp" exwm-instance-name))
-		 (exwm-workspace-rename-buffer exwm-class-name))))
-   (add-hook 'exwm-update-title-hook
-	     (lambda ()
-	       (when (or (not exwm-instance-name)
-			 (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-			 (string= "gimp" exwm-instance-name))
-		 (exwm-workspace-rename-buffer exwm-title))))
+   ;; (add-hook 'exwm-update-class-hook
+   ;; 	  (lambda ()
+   ;; 	    (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+   ;; 			(string= "gimp" exwm-instance-name))
+   ;; 	      (exwm-workspace-rename-buffer exwm-class-name))))
+   ;; (add-hook 'exwm-update-title-hook
+   ;; 	  (lambda ()
+   ;; 	    (when (or (not exwm-instance-name)
+   ;; 		      (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+   ;; 		      (string= "gimp" exwm-instance-name))
+   ;; 	      (exwm-workspace-rename-buffer exwm-title))))
 
-   (exwm-enable)
+   ;; (exwm-enable)
 
  #+END_SRC
 ** DMenu
@@ -248,15 +248,16 @@
    (unless (package-installed-p 'vscode-icon)
    (package-install 'vscode-icon))
    (require 'vscode-icon)
+   (unless (package-installed-p 'transpose-frame)
+     (package-refresh-contents)
+   (package-install 'transpose-frame))
+
  #+END_SRC 
-** Ergonomics
- #+BEGIN_SRC emacs-lisp
-   (shell-command "xmodmap -e 'keysym Control_L = Control_R'")
- #+END_SRC
 ** Powerline
-   #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'powerline)
-     (package-install 'powerline))
-     (require 'powerline)
-     (powerline-default-theme)
-   #+END_SRC
+ #+BEGIN_SRC emacs-lisp
+   (unless (package-installed-p 'powerline)
+   (package-install 'powerline))
+   (require 'powerline)
+   (powerline-default-theme)
+   (display-battery-mode -1)
+ #+END_SRC
