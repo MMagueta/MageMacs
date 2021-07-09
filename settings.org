@@ -162,6 +162,15 @@
      (require 'multiple-cursors)
      (global-set-key (kbd "C-c m c") 'mc/edit-lines)
    #+END_SRC
+** PlantUML
+ #+BEGIN_SRC elisp
+  (unless (package-installed-p 'plantuml-mode)
+    (package-install 'plantuml-mode))
+  (require 'plantuml-mode)
+  (setq org-plantuml-jar-path (expand-file-name "~/.emacs.d/sources/plantuml-jar-gplv2-1.2021.8/plantuml.jar"))
+  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+  (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
+ #+END_SRC
 * Shell
 #+BEGIN_SRC emacs-lisp
   (use-package eshell-syntax-highlighting
