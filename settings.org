@@ -1,16 +1,16 @@
 * MELPA
 #+BEGIN_SRC emacs-lisp
-  (require 'package)
-    (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-    (unless package-archive-contents (package-refresh-contents))
-    (package-initialize)
+  ;; (require 'package)
+  ;;   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+  ;;   (unless package-archive-contents (package-refresh-contents))
+  ;;   (package-initialize)
 
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-  (package-install 'use-package))
+  ;; (unless (package-installed-p 'use-package)
+  ;;   (package-refresh-contents)
+  ;; (package-install 'use-package))
 
-  (require 'use-package)
-  (setq use-package-always-ensure t)
+  ;; (require 'use-package)
+  ;; (setq use-package-always-ensure t)
 #+END_SRC
 * EXWM
  #+BEGIN_SRC emacs-lisp
@@ -269,8 +269,12 @@
    (unless (package-installed-p 'transpose-frame)
      (package-refresh-contents)
    (package-install 'transpose-frame))
-
- #+END_SRC 
+ #+END_SRC
+** Font
+ #+BEGIN_SRC elisp
+ (custom-set-faces
+ '(default ((t (:family "Monaco" :foundry "APPL" :slant normal :weight normal :height 120 :width normal)))))
+ #+END_SRC
 ** Powerline
  #+BEGIN_SRC emacs-lisp
    (unless (package-installed-p 'powerline)
