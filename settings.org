@@ -84,11 +84,19 @@
 (load-theme 'occidental t)
 #+END_SRC
 * Tooling
+** Swiper
+ #+BEGIN_SRC emacs-lisp
+   (unless (package-installed-p 'swiper)
+     (package-install 'swiper))
+   (require 'swiper)
+   (global-set-key (kbd "\C-s") 'swiper)
+ #+END_SRC
 ** Common Lisp
  #+BEGIN_SRC emacs-lisp
    (unless (package-installed-p 'slime)
      (package-install 'slime))
    (require 'slime)
+   (setq inferior-lisp-program "sbcl")
  #+END_SRC
 ** F#
  #+BEGIN_SRC emacs-lisp
@@ -152,7 +160,7 @@
    (require 'helm)
    (global-set-key (kbd "M-x") 'helm-M-x)
    ;; better buffer navigation w/ help
-   (global-set-key (kbd "M-b") 'helm-buffers-list)
+   (global-set-key (kbd "C-x b") 'helm-buffers-list)
    (helm-mode 1)
    #+END_SRC
 ** Multiple Cursors
@@ -189,7 +197,7 @@
   (setq org-log-done 'time)
   (setq org-agenda-files (list "~/.emacs.d/Agenda/work.org" 
 			       "~/.emacs.d/Agenda/personal.org"))
-  (setq org-todo-keywords '((sequence "CHORE(c)" "PROJ(p)" "STUDY(s)" "|" "DONE(d)" "CANCELLED(c)")))
+  (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)" "CANCELLED(c)")))
   (unless (package-installed-p 'org-bullets)
       (package-install 'org-bullets))
   (require 'org-bullets)
@@ -218,7 +226,7 @@
   (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
   (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
 
-  (setq dired-sidebar-subtree-line-prefix "__")
+  ;;(setq dired-sidebar-subtree-line-prefix "__")
   (setq dired-sidebar-theme 'vscode)
   (setq dired-sidebar-use-term-integration t)
   (setq dired-sidebar-use-custom-font t))
@@ -240,7 +248,8 @@
     (setq dashboard-banner-logo-title "Welcome to MageMacs, GNU Emacs customized by Marcos Magueta")
     (setq dashboard-startup-banner "~/.emacs.d/emacs.svg")
     (setq dashboard-items '((recents  . 10)
-                            (bookmarks . 10)))
+                            (bookmarks . 10)
+                            (projects . 10)))
     (dashboard-setup-startup-hook))
 
     (fringe-mode 1)
