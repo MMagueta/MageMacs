@@ -131,20 +131,6 @@
    'org-babel-load-languages
    '((python . t)))
  #+END_SRC
-** Prolog
-   #+BEGIN_SRC emacs-lisp
-     (load "./prolog.el")
-     (add-to-list 'auto-mode-alist '("\\.pl$" . prolog-mode))
-     (setq prolog-electric-if-then-else-flag t)
-
-     (global-set-key (kbd "C-c l")
-                     (lambda ()
-                       (interactive)
-                       (insert ":- use_module(library()).")
-                       (forward-char -3)))
-     (add-to-list 'load-path "./ob-prolog.el")
-
-   #+END_SRC
 ** Magit
    #+BEGIN_SRC emacs-lisp
      (unless (package-installed-p 'magit)
@@ -180,106 +166,106 @@
   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
  #+END_SRC
 * Shell
-#+BEGIN_SRC emacs-lisp
-  (use-package eshell-syntax-highlighting
-    :after esh-mode
-    :demand t ;; Install if not already installed.
-    :config
-    ;; Enable in all Eshell buffers.
-    (eshell-syntax-highlighting-global-mode +1))
-(eshell-syntax-highlighting-global-mode)
-#+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (use-package eshell-syntax-highlighting
+      :after esh-mode
+      :demand t ;; Install if not already installed.
+      :config
+      ;; Enable in all Eshell buffers.
+      (eshell-syntax-highlighting-global-mode +1))
+    (eshell-syntax-highlighting-global-mode)
+  #+END_SRC
 * Org
-#+BEGIN_SRC emacs-lisp
-  (require 'org)
-  (define-key global-map "\C-cl" 'org-store-link)
-  (define-key global-map "\C-ca" 'org-agenda)
-  (setq org-log-done 'time)
-  (setq org-agenda-files (list "~/.emacs.d/Agenda/work.org" 
-			       "~/.emacs.d/Agenda/personal.org"))
-  (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)" "CANCELLED(c)")))
-  (unless (package-installed-p 'org-bullets)
+  #+BEGIN_SRC emacs-lisp
+    (require 'org)
+    (define-key global-map "\C-cl" 'org-store-link)
+    (define-key global-map "\C-ca" 'org-agenda)
+    (setq org-log-done 'time)
+    (setq org-agenda-files (list "~/.emacs.d/Agenda/work.org"
+				 "~/.emacs.d/Agenda/personal.org"))
+    (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)" "CANCELLED(c)")))
+    (unless (package-installed-p 'org-bullets)
       (package-install 'org-bullets))
-  (require 'org-bullets)
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-#+END_SRC
+    (require 'org-bullets)
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+  #+END_SRC
 * Project
   #+BEGIN_SRC emacs-lisp
-  (unless (package-installed-p 'projectile)
-    (package-install 'projectile))
-  (require 'projectile)
- 
-  (projectile-mode +1)
-  ;;(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+    (unless (package-installed-p 'projectile)
+      (package-install 'projectile))
+    (require 'projectile)
 
-  (use-package dired-sidebar
-  :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
-  :ensure t
-  :commands (dired-sidebar-toggle-sidebar)
-  :init
-  (add-hook 'dired-sidebar-mode-hook
-            (lambda ()
-              (unless (file-remote-p default-directory)
-                (auto-revert-mode))))
-  :config
-  (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
-  (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
+    (projectile-mode +1)
+    ;;(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
-  ;;(setq dired-sidebar-subtree-line-prefix "__")
-  (setq dired-sidebar-theme 'vscode)
-  (setq dired-sidebar-use-term-integration t)
-  (setq dired-sidebar-use-custom-font t))
+    (use-package dired-sidebar
+      :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
+      :ensure t
+      :commands (dired-sidebar-toggle-sidebar)
+      :init
+      (add-hook 'dired-sidebar-mode-hook
+		(lambda ()
+		  (unless (file-remote-p default-directory)
+		    (auto-revert-mode))))
+      :config
+      (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
+      (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
 
-  (defun sidebar-toggle ()
-  "Toggle both `dired-sidebar' and `ibuffer-sidebar'."
-  (interactive)
-  (dired-sidebar-toggle-sidebar)
-  (ibuffer-sidebar-toggle-sidebar))
+      ;;(setq dired-sidebar-subtree-line-prefix "__")
+      (setq dired-sidebar-theme 'vscode)
+      (setq dired-sidebar-use-term-integration t)
+      (setq dired-sidebar-use-custom-font t))
+
+    (defun sidebar-toggle ()
+      "Toggle both `dired-sidebar' and `ibuffer-sidebar'."
+      (interactive)
+      (dired-sidebar-toggle-sidebar)
+      (ibuffer-sidebar-toggle-sidebar))
 
   #+END_SRC
 * Styling
 ** Startup Screen
  #+BEGIN_SRC emacs-lisp
- (use-package dashboard
-    :ensure t
-    :diminish dashboard-mode
-    :config
-    (setq dashboard-banner-logo-title "Welcome to MageMacs, GNU Emacs customized by Marcos Magueta")
-    (setq dashboard-startup-banner "~/.emacs.d/emacs.svg")
-    (setq dashboard-items '((recents  . 10)
-                            (bookmarks . 10)
-                            (projects . 10)))
-    (dashboard-setup-startup-hook))
+   (use-package dashboard
+      :ensure t
+      :diminish dashboard-mode
+      :config
+      (setq dashboard-banner-logo-title "Welcome to MageMacs, GNU Emacs customized by Marcos Magueta")
+      (setq dashboard-startup-banner "~/.emacs.d/emacs.svg")
+      (setq dashboard-items '((recents  . 10)
+			      (bookmarks . 10)
+			      (projects . 10)))
+      (dashboard-setup-startup-hook))
 
-    (fringe-mode 1)
-    (scroll-bar-mode -1)
+      (fringe-mode 1)
+      (scroll-bar-mode -1)
  #+END_SRC
 ** Interface Options
- #+BEGIN_SRC emacs-lisp
-   (menu-bar-mode -1)
-   (tool-bar-mode -1)
-   (toggle-scroll-bar -1)
-   (add-hook 'prog-mode-hook 'linum-mode)
-   (display-battery-mode t)
-   (display-time-mode t)
-   (unless (package-installed-p 'vscode-icon)
-   (package-install 'vscode-icon))
-   (require 'vscode-icon)
-   (unless (package-installed-p 'transpose-frame)
-     (package-refresh-contents)
-   (package-install 'transpose-frame))
- #+END_SRC
+  #+BEGIN_SRC emacs-lisp
+     (menu-bar-mode -1)
+     (tool-bar-mode -1)
+     (toggle-scroll-bar -1)
+     (add-hook 'prog-mode-hook 'linum-mode)
+     (display-battery-mode t)
+     (display-time-mode t)
+     (unless (package-installed-p 'vscode-icon)
+     (package-install 'vscode-icon))
+     (require 'vscode-icon)
+     (unless (package-installed-p 'transpose-frame)
+       (package-refresh-contents)
+     (package-install 'transpose-frame))
+   #+END_SRC
 ** Font
- #+BEGIN_SRC elisp
- (custom-set-faces
- '(default ((t (:family "Monaco" :foundry "APPL" :slant normal :weight normal :height 120 :width normal)))))
- #+END_SRC
+   #+BEGIN_SRC elisp
+     (custom-set-faces
+     '(default ((t (:family "Monaco" :foundry "APPL" :slant normal :weight normal :height 120 :width normal)))))
+   #+END_SRC
 ** Powerline
- #+BEGIN_SRC emacs-lisp
-   (unless (package-installed-p 'powerline)
-   (package-install 'powerline))
-   (require 'powerline)
-   (powerline-default-theme)
-   (display-battery-mode -1)
- #+END_SRC
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'powerline)
+       (package-install 'powerline))
+     (require 'powerline)
+     (powerline-default-theme)
+     (display-battery-mode -1)
+   #+END_SRC
