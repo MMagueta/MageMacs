@@ -115,10 +115,13 @@
      (package-install 'company-quickhelp))
    (require 'company-quickhelp)
 
-   (add-to-list 'auto-mode-alist '("\\.fs$" . fsharp-mode))     
+   (add-to-list 'auto-mode-alist '("\\.fs$" . fsharp-mode))
+   (add-hook 'fsharp-mode-hook #'eglot-ensure)
 
-   (company-quickhelp-mode t)
+   (company-quickhelp-mode nil)
    (setq company-quickhelp-delay '1.0)
+
+   (add-hook 'fsharp-mode-hook #'company-mode)
 
  #+END_SRC
 ** Python
