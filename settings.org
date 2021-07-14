@@ -100,17 +100,17 @@
  #+END_SRC
 ** F#
  #+BEGIN_SRC emacs-lisp
-   ;;; Install fsharp-mode
+      ;;; Install fsharp-mode
    (unless (package-installed-p 'fsharp-mode)
      (package-install 'fsharp-mode))
    (require 'fsharp-mode)
 
-   ;;; Install eglot-fsharp
+      ;;; Install eglot-fsharp
    (unless (package-installed-p 'eglot-fsharp)
      (package-install 'eglot-fsharp))
    (require 'eglot-fsharp)
 
-   ;;; Install company mode to autocomplete
+      ;;; Install company mode to autocomplete
    (unless (package-installed-p 'company-quickhelp)
      (package-install 'company-quickhelp))
    (require 'company-quickhelp)
@@ -122,6 +122,12 @@
    (setq company-quickhelp-delay '1.0)
 
    (add-hook 'fsharp-mode-hook #'company-mode)
+
+   (defun fsharp-mode-before-save-hook ()
+     (when (eq major-mode 'fsharp-mode)
+       (eglot-format buffer-file-name)))
+
+   (add-hook 'before-save-hook #'fsharp-mode-before-save-hook)
 
  #+END_SRC
 ** Python
