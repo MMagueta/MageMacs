@@ -1,28 +1,22 @@
 * MELPA
 #+BEGIN_SRC emacs-lisp
-  ;; (require 'package)
-  ;;   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-  ;;   (unless package-archive-contents (package-refresh-contents))
-  ;;   (package-initialize)
+  (require 'package)
+    (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+    (unless package-archive-contents (package-refresh-contents))
+    (package-initialize)
 
-  ;; (unless (package-installed-p 'use-package)
-  ;;   (package-refresh-contents)
-  ;; (package-install 'use-package))
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+  (package-install 'use-package))
 
-  ;; (require 'use-package)
-  ;; (setq use-package-always-ensure t)
+  (require 'use-package)
+  (setq use-package-always-ensure t)
 #+END_SRC
 * EXWM
  #+BEGIN_SRC emacs-lisp
-   ;; ;; You are strongly encouraged to enable something like `ido-mode' to alter
-   ;; ;; the default behavior of 'C-x b', or you will take great pains to switch
-   ;; ;; to or back from a floating frame (remember 'C-x 5 o' if you refuse this
-   ;; ;; proposal however).
-   ;; ;; You may also want to call `exwm-config-ido' later (see below).
-   ;; (ido-mode 1)
+   (ido-mode 1)
 
-   ;; ;; Emacs server is not required to run EXWM but it has some interesting uses
-   ;; ;; (see next section).
+   ;; (see next section).
    ;; (server-start)
 
    ;; (require 'exwm)
@@ -71,18 +65,18 @@
      (require 'dmenu)
    #+END_SRC
 * Theme
-#+BEGIN_SRC emacs-lisp
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-;;(load-theme 'pastelmac t)
-;;(load-theme 'snowish t)
-;;(load-theme 'vim-colors t)
-;;(load-theme 'hydandata-light t)
-;;(load-theme 'resolve t)
-;;(load-theme 'mac-classic t)
-;;(load-theme 'dracula t)
-;;(load-theme 'afternoon t)
-(load-theme 'occidental t)
-#+END_SRC
+ #+BEGIN_SRC emacs-lisp
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+  ;;(load-theme 'pastelmac t)
+  ;;(load-theme 'snowish t)
+  ;;(load-theme 'vim-colors t)
+  ;;(load-theme 'hydandata-light t)
+  ;;(load-theme 'resolve t)
+  ;;(load-theme 'mac-classic t)
+  ;;(load-theme 'dracula t)
+  ;;(load-theme 'afternoon t)
+  (load-theme 'occidental t)
+ #+END_SRC
 * Tooling
 ** Swiper
  #+BEGIN_SRC emacs-lisp
@@ -91,7 +85,7 @@
    (require 'swiper)
    (global-set-key (kbd "\C-s") 'swiper)
  #+END_SRC
-** Common Lisp
+** Common Lisp Slime
  #+BEGIN_SRC emacs-lisp
    (unless (package-installed-p 'slime)
      (package-install 'slime))
@@ -100,17 +94,14 @@
  #+END_SRC
 ** F#
  #+BEGIN_SRC emacs-lisp
-      ;;; Install fsharp-mode
    (unless (package-installed-p 'fsharp-mode)
      (package-install 'fsharp-mode))
    (require 'fsharp-mode)
 
-      ;;; Install eglot-fsharp
    (unless (package-installed-p 'eglot-fsharp)
      (package-install 'eglot-fsharp))
    (require 'eglot-fsharp)
 
-      ;;; Install company mode to autocomplete
    (unless (package-installed-p 'company-quickhelp)
      (package-install 'company-quickhelp))
    (require 'company-quickhelp)
@@ -178,9 +169,8 @@
   #+BEGIN_SRC emacs-lisp
     (use-package eshell-syntax-highlighting
       :after esh-mode
-      :demand t ;; Install if not already installed.
+      :demand t
       :config
-      ;; Enable in all Eshell buffers.
       (eshell-syntax-highlighting-global-mode +1))
     (eshell-syntax-highlighting-global-mode)
   #+END_SRC
@@ -240,13 +230,12 @@
       :ensure t
       :diminish dashboard-mode
       :config
-      (setq dashboard-banner-logo-title "Welcome to MageMacs, GNU Emacs customized by Marcos Magueta")
+      (setq dashboard-banner-logo-title "Welcome to MageMacs, a magic GNU Emacs customization")
       (setq dashboard-startup-banner "~/.emacs.d/emacs.svg")
       (setq dashboard-items '((recents  . 10)
 			      (bookmarks . 10)
 			      (projects . 10)))
       (dashboard-setup-startup-hook))
-
       (fringe-mode 1)
       (scroll-bar-mode -1)
  #+END_SRC
