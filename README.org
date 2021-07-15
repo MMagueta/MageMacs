@@ -1,0 +1,17 @@
+#+TITLE: Magemacs
+
+[[file:sources/images/sample-look-dashboard.png]]
+
+* What is the title about?
+  What at first was a pun with my name (Magueta + Emacs) later
+  developed to the philosophy of the entire customization behind
+  it. Make things work like magic, but make it easy for people to
+  replicate your tricks.
+  
+* Philosophy
+
+* Target audience
+
+* Features/packages available 
+
+* Contributions

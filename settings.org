@@ -231,7 +231,8 @@
       :diminish dashboard-mode
       :config
       (setq dashboard-banner-logo-title "Welcome to MageMacs, a magic GNU Emacs customization")
-      (setq dashboard-startup-banner "~/.emacs.d/emacs.svg")
+      ;; (setq dashboard-startup-banner "~/.emacs.d/sources/images/emacs.svg")
+      (setq dashboard-startup-banner "~/.emacs.d/sources/images/WarpBlock.png")
       (setq dashboard-items '((recents  . 10)
 			      (bookmarks . 10)
 			      (projects . 10)))
