@@ -114,11 +114,11 @@
 
    (add-hook 'fsharp-mode-hook #'company-mode)
 
-   (defun fsharp-mode-before-save-hook ()
-     (when (eq major-mode 'fsharp-mode)
-       (eglot-format buffer-file-name)))
-
-   (add-hook 'before-save-hook #'fsharp-mode-before-save-hook)
+   (add-hook 'fsharp-mode-hook
+		  (lambda ()
+			(add-hook 'before-save-hook
+					  (lambda () (eglot-format buffer-file-name))
+					  nil 'local)))
 
  #+END_SRC
 ** Python
