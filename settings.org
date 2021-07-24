@@ -1,63 +1,63 @@
 * MELPA
-#+BEGIN_SRC emacs-lisp
-  (require 'package)
+  #+BEGIN_SRC emacs-lisp
+    (require 'package)
+    (setq package-enable-at-startup nil)
     (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-    (unless package-archive-contents (package-refresh-contents))
     (package-initialize)
 
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-  (package-install 'use-package))
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
 
-  (require 'use-package)
-  (setq use-package-always-ensure t)
-#+END_SRC
+    (eval-when-compile
+      (require 'use-package))
+  #+END_SRC
 * EXWM
- #+BEGIN_SRC emacs-lisp
-   (ido-mode 1)
+  #+BEGIN_SRC emacs-lisp
+    (ido-mode 1)
 
-   ;; (see next section).
-   ;; (server-start)
+    ;; (see next section).
+    ;; (server-start)
 
-   ;; (require 'exwm)
+    ;; (require 'exwm)
 
-   ;; (require 'exwm-config)
-   ;; (exwm-config-ido)
+    ;; (require 'exwm-config)
+    ;; (exwm-config-ido)
 
 
-   ;; (require 'exwm-randr)
-   ;; (setq exwm-randr-workspace-output-plist '(0 "HDMI1" 1 "eDP1"))
-   ;; (add-hook 'exwm-randr-screen-change-hook
-   ;; 	(lambda ()
-   ;; 	  (start-process-shell-command
-   ;; 	  "xrandr" nil "xrandr --output HDMI1 --mode 1920x1080 --primary --left-of eDP1 --output eDP1 --off")))
-   ;;           ;;"xrandr" nil "xrandr --output HDMI1 --mode 1920x1080 --primary --left-of eDP1 --output eDP1 --mode 1366x768")))
-   ;; 	  ;;"xrandr" nil "xrandr --output eDP1 --mode 1366x768")))
-   ;; (exwm-randr-enable)
+    ;; (require 'exwm-randr)
+    ;; (setq exwm-randr-workspace-output-plist '(0 "HDMI1" 1 "eDP1"))
+    ;; (add-hook 'exwm-randr-screen-change-hook
+    ;; 	(lambda ()
+    ;; 	  (start-process-shell-command
+    ;; 	  "xrandr" nil "xrandr --output HDMI1 --mode 1920x1080 --primary --left-of eDP1 --output eDP1 --off")))
+    ;;           ;;"xrandr" nil "xrandr --output HDMI1 --mode 1920x1080 --primary --left-of eDP1 --output eDP1 --mode 1366x768")))
+    ;; 	  ;;"xrandr" nil "xrandr --output eDP1 --mode 1366x768")))
+    ;; (exwm-randr-enable)
 
-   ;; ;; Set the initial number of workspaces (they can also be created later).
-   ;; (setq exwm-workspace-number 2)
+    ;; ;; Set the initial number of workspaces (they can also be created later).
+    ;; (setq exwm-workspace-number 2)
 
-   ;; (setq exwm-input-global-keys
-   ;;      `(
-   ;;        ([?\s-d] . dmenu)
-   ;;        ([?\s-e] . eshell)))
+    ;; (setq exwm-input-global-keys
+    ;;      `(
+    ;;        ([?\s-d] . dmenu)
+    ;;        ([?\s-e] . eshell)))
 
-   ;; (add-hook 'exwm-update-class-hook
-   ;; 	  (lambda ()
-   ;; 	    (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-   ;; 			(string= "gimp" exwm-instance-name))
-   ;; 	      (exwm-workspace-rename-buffer exwm-class-name))))
-   ;; (add-hook 'exwm-update-title-hook
-   ;; 	  (lambda ()
-   ;; 	    (when (or (not exwm-instance-name)
-   ;; 		      (string-prefix-p "sun-awt-X11-" exwm-instance-name)
-   ;; 		      (string= "gimp" exwm-instance-name))
-   ;; 	      (exwm-workspace-rename-buffer exwm-title))))
+    ;; (add-hook 'exwm-update-class-hook
+    ;; 	  (lambda ()
+    ;; 	    (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+    ;; 			(string= "gimp" exwm-instance-name))
+    ;; 	      (exwm-workspace-rename-buffer exwm-class-name))))
+    ;; (add-hook 'exwm-update-title-hook
+    ;; 	  (lambda ()
+    ;; 	    (when (or (not exwm-instance-name)
+    ;; 		      (string-prefix-p "sun-awt-X11-" exwm-instance-name)
+    ;; 		      (string= "gimp" exwm-instance-name))
+    ;; 	      (exwm-workspace-rename-buffer exwm-title))))
 
-   ;; (exwm-enable)
+    ;; (exwm-enable)
 
- #+END_SRC
+  #+END_SRC
 ** DMenu
    #+BEGIN_SRC emacs-lisp
      (unless (package-installed-p 'dmenu)
@@ -65,61 +65,57 @@
      (require 'dmenu)
    #+END_SRC
 * Theme
- #+BEGIN_SRC emacs-lisp
-  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-  ;;(load-theme 'pastelmac t)
-  ;;(load-theme 'snowish t)
-  ;;(load-theme 'vim-colors t)
-  ;;(load-theme 'hydandata-light t)
-  ;;(load-theme 'resolve t)
-  ;;(load-theme 'mac-classic t)
-  ;;(load-theme 'dracula t)
-  ;;(load-theme 'afternoon t)
-  (load-theme 'occidental t)
- #+END_SRC
+  #+BEGIN_SRC emacs-lisp
+    (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
+    ;;(load-theme 'pastelmac t)
+    ;;(load-theme 'snowish t)
+    ;;(load-theme 'vim-colors t)
+    ;;(load-theme 'hydandata-light t)
+    ;;(load-theme 'resolve t)
+    ;;(load-theme 'mac-classic t)
+    ;;(load-theme 'dracula t)
+    ;;(load-theme 'afternoon t)
+    (load-theme 'occidental t)
+  #+END_SRC
 * Tooling
 ** Swiper
- #+BEGIN_SRC emacs-lisp
-   (unless (package-installed-p 'swiper)
-     (package-install 'swiper))
-   (require 'swiper)
-   (global-set-key (kbd "\C-s") 'swiper)
- #+END_SRC
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'swiper)
+       (package-install 'swiper))
+     (require 'swiper)
+     (global-set-key (kbd "\C-s") 'swiper)
+   #+END_SRC
 ** Common Lisp Slime
- #+BEGIN_SRC emacs-lisp
-   (unless (package-installed-p 'slime)
-     (package-install 'slime))
-   (require 'slime)
-   (setq inferior-lisp-program "sbcl")
- #+END_SRC
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'slime)
+       (package-install 'slime))
+     (require 'slime)
+     (setq inferior-lisp-program "sbcl")
+   #+END_SRC
 ** F#
  #+BEGIN_SRC emacs-lisp
-   (unless (package-installed-p 'fsharp-mode)
-     (package-install 'fsharp-mode))
-   (require 'fsharp-mode)
 
-   (unless (package-installed-p 'eglot-fsharp)
-     (package-install 'eglot-fsharp))
-   (require 'eglot-fsharp)
+   (use-package eglot-fsharp
+     :ensure t)
 
-   (unless (package-installed-p 'company-quickhelp)
-     (package-install 'company-quickhelp))
-   (require 'company-quickhelp)
+   (use-package company-quickhelp
+     :ensure t
+     :init
+     (setq company-quickhelp-delay '1.0)
+     :config (company-quickhelp-mode nil))
 
-   (add-to-list 'auto-mode-alist '("\\.fs$" . fsharp-mode))
-   (add-hook 'fsharp-mode-hook #'eglot-ensure)
-
-   (company-quickhelp-mode nil)
-   (setq company-quickhelp-delay '1.0)
-
-   (add-hook 'fsharp-mode-hook #'company-mode)
-
-   (add-hook 'fsharp-mode-hook
-		  (lambda ()
-			(add-hook 'before-save-hook
-					  (lambda () (eglot-format buffer-file-name))
-					  nil 'local)))
-
+   (use-package fsharp-mode
+     :ensure t
+     :mode (("\\.fs$" .  fsharp-mode)
+	    ("\\.fsx$" .  fsharp-mode))
+     :hook ((fsharp-mode . eglot-ensure)
+	    (fsharp-mode . company-mode))
+     :config
+     (add-hook 'fsharp-mode-hook
+	       (lambda ()
+		 (add-hook 'before-save-hook
+			   (lambda () (eglot-format buffer-file-name))
+			   nil 'local))))
  #+END_SRC
 ** Python
  #+BEGIN_SRC emacs-lisp
@@ -257,8 +253,9 @@
    #+END_SRC
 ** Font
    #+BEGIN_SRC elisp
-     (custom-set-faces
-     '(default ((t (:family "Monaco" :foundry "APPL" :slant normal :weight normal :height 120 :width normal)))))
+     ;; (custom-set-faces
+     ;; '(default ((t (:family "Monaco" :foundry "APPL" :slant normal :weight normal :height 120 :width normal)))))
+     (custom-set-faces'(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight bold :height 120 :width normal)))))
    #+END_SRC
 ** Powerline
    #+BEGIN_SRC emacs-lisp
