@@ -24,7 +24,6 @@
     ;; (require 'exwm-config)
     ;; (exwm-config-ido)
 
-
     ;; (require 'exwm-randr)
     ;; (setq exwm-randr-workspace-output-plist '(0 "HDMI1" 1 "eDP1"))
     ;; (add-hook 'exwm-randr-screen-change-hook
@@ -95,8 +94,47 @@
 ** F#
  #+BEGIN_SRC emacs-lisp
 
+   (use-package comint
+     ;; This is based on
+     ;; https://oleksandrmanzyuk.wordpress.com/2011/10/23/a-persistent-command-history-in-emacs/
+     ;; The idea is to store sessions of comint based modes. For example, to enable
+     ;; reading/writing of command history in, say, inferior-haskell-mode buffers,
+     ;; simply add turn-on-comint-history to inferior-haskell-mode-hook by adding
+     ;; it to the :hook directive
+     :config
+     (defun comint-write-history-on-exit (process event)
+       (comint-write-input-ring)
+       (let ((buf (process-buffer process)))
+	 (when (buffer-live-p buf)
+	   (with-current-buffer buf
+	     (insert (format "\nProcess %s %s" process event))))))
+
+     (defun turn-on-comint-history ()
+       (let ((process (get-buffer-process (current-buffer))))
+	 (when process
+	   (setq comint-input-ring-file-name
+		 (format "~/.emacs.d/inferior-%s-history"
+			 (process-name process)))
+	   (comint-read-input-ring)
+	   (set-process-sentinel process
+				 #'comint-write-history-on-exit))))
+
+     (defun mapc-buffers (fn)
+       (mapc (lambda (buffer)
+	       (with-current-buffer buffer
+		 (funcall fn)))
+	     (buffer-list)))
+
+     (defun comint-write-input-ring-all-buffers ()
+       (mapc-buffers 'comint-write-input-ring))
+
+     (add-hook 'kill-emacs-hook 'comint-write-input-ring-all-buffers)
+     (add-hook 'kill-buffer-hook 'comint-write-input-ring))
+
    (use-package eglot-fsharp
-     :ensure t)
+     :ensure t
+     :config
+     (add-hook 'inferior-fsharp-mode-hook 'turn-on-comint-history))
 
    (use-package company-quickhelp
      :ensure t
@@ -111,6 +149,7 @@
      :hook ((fsharp-mode . eglot-ensure)
 	    (fsharp-mode . company-mode))
      :config
+     (setq inferior-fsharp-program "dotnet fsi")
      (add-hook 'fsharp-mode-hook
 	       (lambda ()
 		 (add-hook 'before-save-hook
@@ -164,11 +203,9 @@
 * Shell
   #+BEGIN_SRC emacs-lisp
     (use-package eshell-syntax-highlighting
-      :after esh-mode
-      :demand t
+      :ensure t
       :config
       (eshell-syntax-highlighting-global-mode +1))
-    (eshell-syntax-highlighting-global-mode)
   #+END_SRC
 * Org
   #+BEGIN_SRC emacs-lisp
@@ -227,8 +264,8 @@
       :diminish dashboard-mode
       :config
       (setq dashboard-banner-logo-title "Welcome to MageMacs, a magic GNU Emacs customization")
-      ;; (setq dashboard-startup-banner "~/.emacs.d/sources/images/emacs.svg")
-      (setq dashboard-startup-banner "~/.emacs.d/sources/images/WarpBlock.png")
+      (setq dashboard-startup-banner "~/.emacs.d/sources/images/emacs.svg")
+      ;;(setq dashboard-startup-banner "~/.emacs.d/sources/images/WarpBlock.png")
       (setq dashboard-items '((recents  . 10)
 			      (bookmarks . 10)
 			      (projects . 10)))
