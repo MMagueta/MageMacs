@@ -65,6 +65,9 @@
    #+END_SRC
 * Theme
   #+BEGIN_SRC emacs-lisp
+    (unless (package-installed-p 'color-theme-sanityinc-tomorrow)
+      (package-install 'color-theme-sanityinc-tomorrow))
+    (require 'color-theme-sanityinc-tomorrow)
     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
     ;;(load-theme 'pastelmac t)
     ;;(load-theme 'snowish t)
@@ -265,7 +268,6 @@
       :config
       (setq dashboard-banner-logo-title "Welcome to MageMacs, a magic GNU Emacs customization")
       (setq dashboard-startup-banner "~/.emacs.d/sources/images/emacs.svg")
-      ;;(setq dashboard-startup-banner "~/.emacs.d/sources/images/WarpBlock.png")
       (setq dashboard-items '((recents  . 10)
 			      (bookmarks . 10)
 			      (projects . 10)))
@@ -290,9 +292,8 @@
    #+END_SRC
 ** Font
    #+BEGIN_SRC elisp
-     ;; (custom-set-faces
-     ;; '(default ((t (:family "Monaco" :foundry "APPL" :slant normal :weight normal :height 120 :width normal)))))
-     (custom-set-faces'(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight bold :height 120 :width normal)))))
+     (custom-set-faces '(default ((t (:family "Monaco" :foundry "APPL" :slant normal :weight normal :height 120 :width normal)))))
+     ;;(custom-set-faces'(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight bold :height 120 :width normal)))))
    #+END_SRC
 ** Powerline
    #+BEGIN_SRC emacs-lisp
