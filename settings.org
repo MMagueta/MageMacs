@@ -15,15 +15,11 @@
 * EXWM
   #+BEGIN_SRC emacs-lisp
     (ido-mode 1)
-
-    ;; (see next section).
     ;; (server-start)
-
-    ;; (require 'exwm)
-
+    ;; (use-package exwm
+    ;;   :ensure t)
     ;; (require 'exwm-config)
     ;; (exwm-config-ido)
-
     ;; (require 'exwm-randr)
     ;; (setq exwm-randr-workspace-output-plist '(0 "HDMI1" 1 "eDP1"))
     ;; (add-hook 'exwm-randr-screen-change-hook
@@ -33,15 +29,12 @@
     ;;           ;;"xrandr" nil "xrandr --output HDMI1 --mode 1920x1080 --primary --left-of eDP1 --output eDP1 --mode 1366x768")))
     ;; 	  ;;"xrandr" nil "xrandr --output eDP1 --mode 1366x768")))
     ;; (exwm-randr-enable)
-
     ;; ;; Set the initial number of workspaces (they can also be created later).
     ;; (setq exwm-workspace-number 2)
-
     ;; (setq exwm-input-global-keys
     ;;      `(
     ;;        ([?\s-d] . dmenu)
     ;;        ([?\s-e] . eshell)))
-
     ;; (add-hook 'exwm-update-class-hook
     ;; 	  (lambda ()
     ;; 	    (unless (or (string-prefix-p "sun-awt-X11-" exwm-instance-name)
@@ -53,21 +46,19 @@
     ;; 		      (string-prefix-p "sun-awt-X11-" exwm-instance-name)
     ;; 		      (string= "gimp" exwm-instance-name))
     ;; 	      (exwm-workspace-rename-buffer exwm-title))))
-
     ;; (exwm-enable)
-
+    
   #+END_SRC
 ** DMenu
    #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'dmenu)
-       (package-install 'dmenu))
-     (require 'dmenu)
+     ;; (unless (package-installed-p 'dmenu)
+     ;;   (package-install 'dmenu))
+     ;; (require 'dmenu)
    #+END_SRC
 * Theme
   #+BEGIN_SRC emacs-lisp
-    (unless (package-installed-p 'color-theme-sanityinc-tomorrow)
-      (package-install 'color-theme-sanityinc-tomorrow))
-    (require 'color-theme-sanityinc-tomorrow)
+    (use-package color-theme-sanityinc-tomorrow
+       :ensure t)
     (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
     ;;(load-theme 'pastelmac t)
     ;;(load-theme 'snowish t)
@@ -77,132 +68,130 @@
     ;;(load-theme 'mac-classic t)
     ;;(load-theme 'dracula t)
     ;;(load-theme 'afternoon t)
-    (load-theme 'occidental t)
+    ;;(load-theme 'occidental t)
+    (load-theme 'sanityinc-tomorrow-blue t)
   #+END_SRC
 * Tooling
+** Programming
+   #+BEGIN_SRC emacs-lisp
+     (defun programming--format-buffer ()
+       (add-hook 'before-save-hook
+		 (lambda () (lsp-format-buffer buffer-file-name))
+		 nil 'local))
+   #+END_SRC
 ** Swiper
    #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'swiper)
-       (package-install 'swiper))
-     (require 'swiper)
+     (use-package swiper
+       :ensure t)
      (global-set-key (kbd "\C-s") 'swiper)
    #+END_SRC
 ** Common Lisp Slime
    #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'slime)
-       (package-install 'slime))
-     (require 'slime)
+     (use-package slime
+       :ensure t)
      (setq inferior-lisp-program "sbcl")
    #+END_SRC
 ** F#
- #+BEGIN_SRC emacs-lisp
-
-   (use-package comint
-     ;; This is based on
-     ;; https://oleksandrmanzyuk.wordpress.com/2011/10/23/a-persistent-command-history-in-emacs/
-     ;; The idea is to store sessions of comint based modes. For example, to enable
-     ;; reading/writing of command history in, say, inferior-haskell-mode buffers,
-     ;; simply add turn-on-comint-history to inferior-haskell-mode-hook by adding
-     ;; it to the :hook directive
-     :config
-     (defun comint-write-history-on-exit (process event)
-       (comint-write-input-ring)
-       (let ((buf (process-buffer process)))
-	 (when (buffer-live-p buf)
-	   (with-current-buffer buf
-	     (insert (format "\nProcess %s %s" process event))))))
-
-     (defun turn-on-comint-history ()
-       (let ((process (get-buffer-process (current-buffer))))
-	 (when process
-	   (setq comint-input-ring-file-name
-		 (format "~/.emacs.d/inferior-%s-history"
-			 (process-name process)))
-	   (comint-read-input-ring)
-	   (set-process-sentinel process
-				 #'comint-write-history-on-exit))))
-
-     (defun mapc-buffers (fn)
-       (mapc (lambda (buffer)
-	       (with-current-buffer buffer
-		 (funcall fn)))
-	     (buffer-list)))
-
-     (defun comint-write-input-ring-all-buffers ()
-       (mapc-buffers 'comint-write-input-ring))
-
-     (add-hook 'kill-emacs-hook 'comint-write-input-ring-all-buffers)
-     (add-hook 'kill-buffer-hook 'comint-write-input-ring))
-
-   (use-package eglot-fsharp
-     :ensure t
-     :config
-     (add-hook 'inferior-fsharp-mode-hook 'turn-on-comint-history))
-
-   (use-package company-quickhelp
-     :ensure t
-     :init
-     (setq company-quickhelp-delay '1.0)
-     :config (company-quickhelp-mode nil))
-
-   (use-package fsharp-mode
-     :ensure t
-     :mode (("\\.fs$" .  fsharp-mode)
-	    ("\\.fsx$" .  fsharp-mode))
-     :hook ((fsharp-mode . eglot-ensure)
-	    (fsharp-mode . company-mode))
-     :config
-     (setq inferior-fsharp-program "dotnet fsi")
-     (add-hook 'fsharp-mode-hook
-	       (lambda ()
-		 (add-hook 'before-save-hook
-			   (lambda () (eglot-format buffer-file-name))
-			   nil 'local))))
- #+END_SRC
+   #+BEGIN_SRC emacs-lisp
+     
+     (use-package comint
+       ;; This is based on
+       ;; https://oleksandrmanzyuk.wordpress.com/2011/10/23/a-persistent-command-history-in-emacs/
+       ;; The idea is to store sessions of comint based modes. For example, to enable
+       ;; reading/writing of command history in, say, inferior-haskell-mode buffers,
+       ;; simply add turn-on-comint-history to inferior-haskell-mode-hook by adding
+       ;; it to the :hook directive
+       :config
+       (defun comint-write-history-on-exit (process event)
+	 (comint-write-input-ring)
+	 (let ((buf (process-buffer process)))
+	   (when (buffer-live-p buf)
+	     (with-current-buffer buf
+	       (insert (format "\nProcess %s %s" process event))))))
+     
+       (defun turn-on-comint-history ()
+	 (let ((process (get-buffer-process (current-buffer))))
+	   (when process
+	     (setq comint-input-ring-file-name
+		   (format "~/.emacs.d/inferior-%s-history"
+			   (process-name process)))
+	     (comint-read-input-ring)
+	     (set-process-sentinel process
+				   #'comint-write-history-on-exit))))
+     
+       (defun mapc-buffers (fn)
+	 (mapc (lambda (buffer)
+		 (with-current-buffer buffer
+		   (funcall fn)))
+	       (buffer-list)))
+     
+       (defun comint-write-input-ring-all-buffers ()
+	 (mapc-buffers 'comint-write-input-ring))
+     
+       (add-hook 'kill-emacs-hook 'comint-write-input-ring-all-buffers)
+       (add-hook 'kill-buffer-hook 'comint-write-input-ring))
+     
+     ;; (use-package eglot-fsharp
+     ;;   :ensure 
+     ;;   :config
+     ;;   (add-hook 'inferior-fsharp-mode-hook 'turn-on-comint-history))
+     
+     (use-package company-quickhelp
+       :ensure t
+       :init
+       (setq company-quickhelp-delay '1.0)
+       :config (company-quickhelp-mode nil))
+     
+     (use-package fsharp-mode
+       :ensure t
+       :mode (("\\.fs$" .  fsharp-mode)
+	      ("\\.fsx$" .  fsharp-mode))
+       :hook ((fsharp-mode . lsp-mode)
+	      (fsharp-mode . company-mode))
+       :config
+       (setq inferior-fsharp-program "dotnet fsi")
+       (add-hook 'fsharp-mode-hook programming--format-buffer)
+       (add-hook 'inferior-fsharp-mode-hook 'turn-on-comint-history))
+   #+END_SRC
 ** Python
- #+BEGIN_SRC emacs-lisp
-   (defun run-buffer ()
-   (interactive)
-   (shell-command (concat "python3 " buffer-file-name)))
-   (global-set-key (kbd "<f9>") 'run-buffer)
-   (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((python . t)))
- #+END_SRC
+   #+BEGIN_SRC emacs-lisp
+     (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((python . t)))
+   #+END_SRC
 ** Magit
    #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'magit)
-       (package-install 'magit))
-     (require 'magit)
-     (global-set-key (kbd "C-x g") 'magit-status)
+     (use-package magit
+       :ensure t
+       :init
+       (global-set-key (kbd "C-x g") 'magit-status))
    #+END_SRC
 ** Helm
    #+BEGIN_SRC emacs-lisp
-   ;; start helm-help mode (a version of M-x which shows documentaiton)
-   (unless (package-installed-p 'helm)
-     (package-install 'helm))
-   (require 'helm)
-   (global-set-key (kbd "M-x") 'helm-M-x)
-   ;; better buffer navigation w/ help
-   (global-set-key (kbd "C-x b") 'helm-buffers-list)
-   (helm-mode 1)
+     (use-package helm
+       :ensure t
+       :init
+       (helm-mode 1)
+       :config
+       (global-set-key (kbd "M-x") 'helm-M-x)
+       (global-set-key (kbd "C-x b") 'helm-buffers-list))
    #+END_SRC
 ** Multiple Cursors
    #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'multiple-cursors)
-       (package-install 'multiple-cursors))
-     (require 'multiple-cursors)
-     (global-set-key (kbd "C-c m c") 'mc/edit-lines)
+     (use-package multiple-cursors
+       :ensure t
+       :config
+       (global-set-key (kbd "C-c m c") 'mc/edit-lines))
    #+END_SRC
 ** PlantUML
- #+BEGIN_SRC elisp
-  (unless (package-installed-p 'plantuml-mode)
-    (package-install 'plantuml-mode))
-  (require 'plantuml-mode)
-  (setq org-plantuml-jar-path (expand-file-name "~/.emacs.d/sources/plantuml-jar-gplv2-1.2021.8/plantuml.jar"))
-  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
-  (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t)))
- #+END_SRC
+   #+BEGIN_SRC elisp
+     (use-package plantuml-mode
+       :ensure t
+       :init
+       (setq org-plantuml-jar-path (expand-file-name "~/.emacs.d/sources/plantuml-jar-gplv2-1.2021.8/plantuml.jar"))
+       (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+       (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
+   #+END_SRC
 * Shell
   #+BEGIN_SRC emacs-lisp
     (use-package eshell-syntax-highlighting
@@ -212,17 +201,20 @@
   #+END_SRC
 * Org
   #+BEGIN_SRC emacs-lisp
-    (require 'org)
-    (define-key global-map "\C-cl" 'org-store-link)
-    (define-key global-map "\C-ca" 'org-agenda)
-    (setq org-log-done 'time)
-    (setq org-agenda-files (list "~/.emacs.d/Agenda/work.org"
-				 "~/.emacs.d/Agenda/personal.org"))
-    (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)" "CANCELLED(c)")))
-    (unless (package-installed-p 'org-bullets)
-      (package-install 'org-bullets))
-    (require 'org-bullets)
-    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+    (use-package org
+      :ensure t
+      :config
+      (define-key global-map "\C-cl" 'org-store-link)
+      (define-key global-map "\C-ca" 'org-agenda)
+      (setq org-log-done 'time)
+      (setq org-agenda-files (list "~/.emacs.d/Agenda/work.org"
+				   "~/.emacs.d/Agenda/personal.org"))
+      (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)" "CANCELLED(c)"))))
+    
+    (use-package org-bullets
+      :ensure t
+      :hook
+      ((org-mode-hook . (lambda () (org-bullets-mode 1)))))
   #+END_SRC
 * Project
   #+BEGIN_SRC emacs-lisp
