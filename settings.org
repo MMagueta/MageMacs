@@ -70,16 +70,15 @@
 ** Programming
    #+BEGIN_SRC emacs-lisp
      (require 'lsp-mode)
-     (setq programming-modes '(fsharp-mode
-			       tuareg-mode
-			       nix-mode))
      (defun lsp-wrapper ()
-       (cond ((member major-mode programming-modes) (lsp))
-	     (t nil)))
+       (let* ((programming-modes '(fsharp-mode
+				   tuareg-mode
+				   nix-mode)))
+	 (cond ((member major-mode programming-modes) (lsp))
+	       (t nil))))
      (use-package lsp-mode
        :ensure t
        :config
-       (add-hook 'lsp-mode-hook #'lsp-wrapper)
        (add-hook 'lsp-mode-hook
 		 (lambda ()
 		   (add-hook 'before-save-hook
@@ -100,6 +99,14 @@
      (use-package slime
        :ensure t)
      (setq inferior-lisp-program "sbcl")
+   #+END_SRC
+** Nix
+   #+BEGIN_SRC emacs-lisp
+     (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
+     (lsp-register-client
+      (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
+		       :major-modes '(nix-mode)
+		       :server-id 'nix))
    #+END_SRC
 ** F#
    #+BEGIN_SRC emacs-lisp
