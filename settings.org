@@ -1,16 +1,11 @@
 * MELPA
   #+BEGIN_SRC emacs-lisp
     (require 'package)
-    (setq package-enable-at-startup nil)
     (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-    (package-initialize)
 
     (unless (package-installed-p 'use-package)
       (package-refresh-contents)
       (package-install 'use-package))
-
-    (eval-when-compile
-      (require 'use-package))
   #+END_SRC
 * EXWM
   #+BEGIN_SRC emacs-lisp
@@ -74,10 +69,25 @@
 * Tooling
 ** Programming
    #+BEGIN_SRC emacs-lisp
-     (defun programming--format-buffer ()
-       (add-hook 'before-save-hook
-		 (lambda () (lsp-format-buffer buffer-file-name))
-		 nil 'local))
+     (require 'lsp-mode)
+     (setq programming-modes '(fsharp-mode
+			       tuareg-mode
+			       nix-mode))
+     (defun lsp-wrapper ()
+       (cond ((member major-mode programming-modes) (lsp))
+	     (t nil)))
+     (use-package lsp-mode
+       :ensure t
+       :config
+       (add-hook 'lsp-mode-hook #'lsp-wrapper)
+       (add-hook 'lsp-mode-hook
+		 (lambda ()
+		   (add-hook 'before-save-hook
+			     (lambda () (lsp-format-buffer buffer-file-name))
+			     nil 'local))))
+     (use-package prog-mode
+       :config
+       (add-hook 'prog-mode-hook #'lsp-wrapper))
    #+END_SRC
 ** Swiper
    #+BEGIN_SRC emacs-lisp
@@ -146,11 +156,15 @@
        :ensure t
        :mode (("\\.fs$" .  fsharp-mode)
 	      ("\\.fsx$" .  fsharp-mode))
-       :hook ((fsharp-mode . lsp-mode)
+       :hook (
 	      (fsharp-mode . company-mode))
        :config
        (setq inferior-fsharp-program "dotnet fsi")
-       (add-hook 'fsharp-mode-hook programming--format-buffer)
+       (add-hook 'prog-mode-hook
+	       (lambda ()
+		 (add-hook 'before-save-hook
+			   (lambda () (lsp-format-buffer buffer-file-name))
+			   nil 'local)))
        (add-hook 'inferior-fsharp-mode-hook 'turn-on-comint-history))
    #+END_SRC
 ** Python
