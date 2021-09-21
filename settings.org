@@ -1,5 +1,5 @@
 * MELPA
-  #+BEGIN_SRC emacs-lisp :tangle yes
+  #+BEGIN_SRC emacs-lisp
     (require 'package)
     (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 
@@ -8,51 +8,47 @@
       (package-install 'use-package))
   #+END_SRC
 * Theme
-  #+BEGIN_SRC emacs-lisp :tangle yes
+  #+BEGIN_SRC emacs-lisp
     (use-package color-theme-sanityinc-tomorrow
        :ensure t)
-    (add-to-list 'custom-theme-load-path "~/.emacs.d/themes")
-    (load-theme 'sanityinc-tomorrow-day t)
+    (load-theme 'sanityinc-tomorrow-blue t)
   #+END_SRC
 * Tooling
 ** Programming
-   #+BEGIN_SRC emacs-lisp :tangle yes
-     (use-package lsp-mode
-       :ensure t)
+   #+BEGIN_SRC emacs-lisp
+     (require 'lsp-mode)
      (defun lsp-wrapper ()
        (let* ((programming-modes '(fsharp-mode
 				   tuareg-mode
 				   nix-mode)))
-	 (cond ((member major-mode programming-modes) (lsp-mode))
+	 (cond ((member major-mode programming-modes) (lsp))
 	       (t nil))))
+     (use-package lsp-mode
+       :ensure t
+       :config
+       (add-hook 'lsp-mode-hook
+		 (lambda ()
+		   (add-hook 'before-save-hook
+			     (lambda () (lsp-format-buffer buffer-file-name))
+			     nil 'local))))
      (use-package prog-mode
-       :init
+       :config
        (add-hook 'prog-mode-hook #'lsp-wrapper))
    #+END_SRC
 ** Swiper
-   #+BEGIN_SRC emacs-lisp :tangle yes
+   #+BEGIN_SRC emacs-lisp
      (use-package swiper
        :ensure t)
      (global-set-key (kbd "\C-s") 'swiper)
    #+END_SRC
-** Common Lisp
-   #+BEGIN_SRC emacs-lisp :tangle yes
+** Common Lisp Slime
+   #+BEGIN_SRC emacs-lisp
      (use-package slime
-       :ensure t
-       :config
-       (setq inferior-lisp-program "sbcl")
-       :init
-       (add-hook 'common-lisp-mode-hook #'rainbow-mode)
-       (add-hook 'common-lisp-mode-hook #'smartparens-strict-mode))
-     (use-package common-lisp-mode
-       :mode (("\\.lisp$" .  common-lisp-mode)))
-     (use-package smartparens
-       :ensure t
-       :init
-       (add-hook 'common-lisp-mode-hook (lambda ()(local-set-key (kbd "M-q") #'sp-kill-sexp))))
+       :ensure t)
+     (setq inferior-lisp-program "sbcl")
    #+END_SRC
 ** Nix
-   #+BEGIN_SRC emacs-lisp :tangle yes
+   #+BEGIN_SRC emacs-lisp
      (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
      (lsp-register-client
       (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
@@ -60,7 +56,7 @@
 		       :server-id 'nix))
    #+END_SRC
 ** F#
-   #+BEGIN_SRC emacs-lisp :tangle yes
+   #+BEGIN_SRC emacs-lisp
      
      (use-package comint
        ;; This is based on
@@ -99,43 +95,47 @@
        (add-hook 'kill-emacs-hook 'comint-write-input-ring-all-buffers)
        (add-hook 'kill-buffer-hook 'comint-write-input-ring))
      
+     ;; (use-package eglot-fsharp
+     ;;   :ensure 
+     ;;   :config
+     ;;   (add-hook 'inferior-fsharp-mode-hook 'turn-on-comint-history))
+     
      (use-package company-quickhelp
        :ensure t
        :init
        (setq company-quickhelp-delay '1.0)
        :config (company-quickhelp-mode nil))
      
-     (defun lint-before-save ()
-       (add-hook 'before-save-hook
-		 lsp-format-buffer
-		 nil 'local))
-     
      (use-package fsharp-mode
        :ensure t
        :mode (("\\.fs$" .  fsharp-mode)
 	      ("\\.fsx$" .  fsharp-mode))
-       :init
-       (add-hook 'fsharp-mode #'company-mode)
-       (add-hook 'fsharp-mode-hook #'lint-before-save)
-       (add-hook 'inferior-fsharp-mode-hook #'turn-on-comint-history)
+       :hook (
+	      (fsharp-mode . company-mode))
        :config
-       (setq inferior-fsharp-program "dotnet fsi"))
+       (setq inferior-fsharp-program "dotnet fsi")
+       (add-hook 'prog-mode-hook
+	       (lambda ()
+		 (add-hook 'before-save-hook
+			   (lambda () (lsp-format-buffer buffer-file-name))
+			   nil 'local)))
+       (add-hook 'inferior-fsharp-mode-hook 'turn-on-comint-history))
    #+END_SRC
 ** Python
-   #+BEGIN_SRC emacs-lisp :tangle yes
+   #+BEGIN_SRC emacs-lisp
      (org-babel-do-load-languages
       'org-babel-load-languages
       '((python . t)))
    #+END_SRC
 ** Magit
-   #+BEGIN_SRC emacs-lisp :tangle yes
+   #+BEGIN_SRC emacs-lisp
      (use-package magit
        :ensure t
        :init
        (global-set-key (kbd "C-x g") 'magit-status))
    #+END_SRC
 ** Helm
-   #+BEGIN_SRC emacs-lisp :tangle yes
+   #+BEGIN_SRC emacs-lisp
      (use-package helm
        :ensure t
        :init
@@ -145,14 +145,14 @@
        (global-set-key (kbd "C-x b") 'helm-buffers-list))
    #+END_SRC
 ** Multiple Cursors
-   #+BEGIN_SRC emacs-lisp :tangle yes
+   #+BEGIN_SRC emacs-lisp
      (use-package multiple-cursors
        :ensure t
        :config
        (global-set-key (kbd "C-c m c") 'mc/edit-lines))
    #+END_SRC
 ** PlantUML
-   #+BEGIN_SRC elisp :tangle yes
+   #+BEGIN_SRC elisp
      (use-package plantuml-mode
        :ensure t
        :init
@@ -161,38 +161,39 @@
        (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
    #+END_SRC
 * Shell
-  #+BEGIN_SRC emacs-lisp :tangle yes
+  #+BEGIN_SRC emacs-lisp
     (use-package eshell-syntax-highlighting
       :ensure t
       :config
       (eshell-syntax-highlighting-global-mode +1))
   #+END_SRC
 * Org
-  #+BEGIN_SRC emacs-lisp :tangle yes
+  #+BEGIN_SRC emacs-lisp
     (use-package org
       :ensure t
       :config
       (define-key global-map "\C-cl" 'org-store-link)
       (define-key global-map "\C-ca" 'org-agenda)
       (setq org-log-done 'time)
-      (setq org-clock-sound "~/.emacs.d/sources/bells.wav")
+      (setq org-agenda-files (list "~/.emacs.d/Agenda/work.org"
+				   "~/.emacs.d/Agenda/personal.org"))
       (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)" "CANCELLED(c)"))))
     
     (use-package org-bullets
       :ensure t
       :hook
-      (org-mode-hook . (lambda () (org-bullets-mode 1))))
+      ((org-mode-hook . (lambda () (org-bullets-mode 1)))))
   #+END_SRC
 * Project
-  #+BEGIN_SRC emacs-lisp :tangle yes
+  #+BEGIN_SRC emacs-lisp
     (unless (package-installed-p 'projectile)
       (package-install 'projectile))
     (require 'projectile)
-    
+
     (projectile-mode +1)
     ;;(define-key projectile-mode-map (kbd "s-p") 'projectile-command-map)
     (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-    
+
     (use-package dired-sidebar
       :bind (("C-x C-n" . dired-sidebar-toggle-sidebar))
       :ensure t
@@ -205,21 +206,22 @@
       :config
       (push 'toggle-window-split dired-sidebar-toggle-hidden-commands)
       (push 'rotate-windows dired-sidebar-toggle-hidden-commands)
-    
+
       ;;(setq dired-sidebar-subtree-line-prefix "__")
+      (setq dired-sidebar-theme 'vscode)
       (setq dired-sidebar-use-term-integration t)
       (setq dired-sidebar-use-custom-font t))
-    
+
     (defun sidebar-toggle ()
       "Toggle both `dired-sidebar' and `ibuffer-sidebar'."
       (interactive)
       (dired-sidebar-toggle-sidebar)
       (ibuffer-sidebar-toggle-sidebar))
-    
+
   #+END_SRC
 * Styling
 ** Startup Screen
- #+BEGIN_SRC emacs-lisp :tangle yes
+ #+BEGIN_SRC emacs-lisp
    (use-package dashboard
       :ensure t
       :diminish dashboard-mode
@@ -234,28 +236,27 @@
       (scroll-bar-mode -1)
  #+END_SRC
 ** Interface Options
-  #+BEGIN_SRC emacs-lisp :tangle yes
-    (ido-mode 1)
-    (menu-bar-mode -1)
-    (tool-bar-mode -1)
-    (toggle-scroll-bar -1)
-    (add-hook 'prog-mode-hook 'linum-mode)
-    (display-battery-mode t)
-    (display-time-mode t)
-    (unless (package-installed-p 'vscode-icon)
-    (package-install 'vscode-icon))
-    (require 'vscode-icon)
-    (unless (package-installed-p 'transpose-frame)
-      (package-refresh-contents)
-    (package-install 'transpose-frame))
+  #+BEGIN_SRC emacs-lisp
+     (menu-bar-mode -1)
+     (tool-bar-mode -1)
+     (toggle-scroll-bar -1)
+     (add-hook 'prog-mode-hook 'linum-mode)
+     (display-battery-mode t)
+     (display-time-mode t)
+     (unless (package-installed-p 'vscode-icon)
+     (package-install 'vscode-icon))
+     (require 'vscode-icon)
+     (unless (package-installed-p 'transpose-frame)
+       (package-refresh-contents)
+     (package-install 'transpose-frame))
    #+END_SRC
 ** Font
-   #+BEGIN_SRC elisp :tangle yes
-     ;;(custom-set-faces '(default ((t (:family "Monaco" :foundry "APPL" :slant normal :weight normal :height 120 :width normal)))))
-     (custom-set-faces'(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 120 :width normal)))))
+   #+BEGIN_SRC elisp
+     (custom-set-faces '(default ((t (:family "Monaco" :foundry "APPL" :slant normal :weight normal :height 120 :width normal)))))
+     ;;(custom-set-faces'(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight bold :height 120 :width normal)))))
    #+END_SRC
 ** Powerline
-   #+BEGIN_SRC emacs-lisp :tangle yes
+   #+BEGIN_SRC emacs-lisp
      (unless (package-installed-p 'powerline)
        (package-install 'powerline))
      (require 'powerline)
