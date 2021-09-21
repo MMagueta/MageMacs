@@ -1,6 +1,0 @@
-
-#+TITLE Personal agenda file
-
-* Tasks
-Add here a personal agenda!
-You may customize the tags and bind the files @settings.org
