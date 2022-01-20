@@ -19,10 +19,22 @@
 (use-package lsp-mode
   :ensure t
   :init
-  (global-set-key (kbd "s-d") 'lsp-ui-doc-glance))
+  (setq lsp-ui-sideline-diagnostic-max-lines 4))
+
+;; For some reason it is required to do at least once
+;; a call to lsp-ui-doc-show in order for this to work
+(defun toggle-between-doc-show-hide ()
+  (interactive)
+  (let ((frame (lsp-ui-doc--get-frame)))
+    (cond ((frame-visible-p frame) (lsp-ui-doc-hide))
+          (t (lsp-ui-doc-show)))))
 
 (use-package lsp-ui
-  :ensure t)
+  :ensure t
+  :init
+  (setq lsp-ui-doc-enable t)
+  :bind
+  (("s-?" . 'toggle-between-doc-show-hide)))
 
 (use-package lsp-treemacs
   :ensure t)
