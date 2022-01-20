@@ -2,17 +2,24 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-(use-package pastelmac-theme
+;; (use-package pastelmac-theme
+  ;; :ensure t
+  ;; :config
+;; (load-theme 'pastelmac t))
+
+(use-package solarized-theme
   :ensure t
   :config
-  (load-theme 'pastelmac t))
+  (load-theme 'solarized-light t))
 
 ;; (setq-default cursor-type 'bar)
 
 (setq create-lockfiles nil)
 
 (use-package lsp-mode
-  :ensure t)
+  :ensure t
+  :init
+  (global-set-key (kbd "s-d") 'lsp-ui-doc-glance))
 
 (use-package lsp-ui
   :ensure t)
@@ -47,8 +54,9 @@
   (setq lsp-sourcekit-executable "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"))
 
 (use-package swiper
-   :ensure t)
-(global-set-key (kbd "\C-s") 'swiper)
+  :ensure t
+  :init
+  (global-set-key (kbd "\C-s") 'swiper))
    
 (use-package slime
    :ensure t)
@@ -208,4 +216,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(powerline transpose-frame dashboard all-the-icons projectile org-bullets eshell-syntax-highlighting multiple-cursors helm magit fsharp-mode company-quickhelp slime swiper lsp-sourcekit swift-mode python-mode lsp-python-ms tuareg nix-mode lsp-treemacs lsp-ui lsp-mode pastelmac-theme use-package)))
+   '(yaml-mode org-pdftools org-drill flymake-flycheck flycheck solarized-theme powerline transpose-frame dashboard all-the-icons projectile org-bullets eshell-syntax-highlighting multiple-cursors helm magit fsharp-mode company-quickhelp slime swiper lsp-sourcekit swift-mode python-mode lsp-python-ms tuareg nix-mode lsp-treemacs lsp-ui lsp-mode pastelmac-theme use-package)))
