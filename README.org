@@ -1,6 +1,6 @@
 #+TITLE: Magemacs
 
-[[file:sources/images/sample-look-dashboard.png]]
+[[file:sources/demo.gif]]
 
 * What is the title about?
   What at first was a pun with my name (Magueta + Emacs) later
@@ -8,10 +8,12 @@
   it. Make things work like magic, but make it easy for people to
   replicate your tricks.
   
-* Philosophy
+* Philosophy & What does it have?
 
-* Target audience
+  Giving magic support to F# out of the box. Linting, auto completion,
+  F# interactive with history, compilation, etc were all a hassle to
+  configure, so feel free to grab the files.
 
-* Features/packages available 
+  This project also has modifications on the interface, keybindings
+  and adds magit, nix-mode, ocaml, common lisp, etc.
 
-* Contributions

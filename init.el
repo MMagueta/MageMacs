@@ -151,13 +151,11 @@
 	  ("\\.fsx$" .  fsharp-mode)
 	  ("\\.fsi$" .  fsharp-mode))
    :hook ((fsharp-mode      . company-mode)
-	  (fsharp-mode      . (lambda () (lsp)))
-	  (fsharp-mode-hook . highlight-indentation-mode))
+	  (fsharp-mode      . (lambda () (lsp))))
    :bind
    (("C-<"     . 'fsharp-shift-region-left)
     ("C->"     . 'fsharp-shift-region-right)
-    ("C-c C-i" . 'run-fsharp)
-    ("C-m"     . 'fsharp-newline-and-indent)
+    ("C-c C-m" . 'fsharp-newline-and-indent)
     ("C-c C-a" . 'fsharp-find-alternate-file))
    :config
    (setq compile-command "dotnet watch run")
@@ -188,13 +186,11 @@
 ;;    (setq org-plantuml-jar-path (expand-file-name "./sources/plantuml-jar-gplv2-1.2021.8/plantuml.jar"))
 ;;    (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
 ;;    (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
-
   
 (use-package eshell-syntax-highlighting
   :ensure t
   :config
   (eshell-syntax-highlighting-global-mode +1))
-
   
 (use-package org
   :ensure t
@@ -206,11 +202,10 @@
 			      "./Agenda/personal.org"))
   (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)" "CANCELLED(c)"))))
 
-
 (use-package org-bullets
   :ensure t
   :hook
-  ((org-mode-hook . (lambda () (org-bullets-mode 1)))))
+  ((org-mode-hook . (lambda () (org-bullets-mode)))))
   
 (use-package projectile
   :ensure t
@@ -252,4 +247,3 @@
   :config
   (powerline-default-theme)
   (display-battery-mode -1))
-
