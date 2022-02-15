@@ -3,23 +3,49 @@
 (package-initialize)
 
 ;; (use-package pastelmac-theme
-  ;; :ensure t
-  ;; :config
-;; (load-theme 'pastelmac t))
+;;   :ensure t
+;;   :config
+;;   (load-theme 'pastelmac t))
 
-(use-package solarized-theme
+(use-package color-theme-sanityinc-tomorrow
   :ensure t
   :config
-  (load-theme 'solarized-light t))
+  (load-theme 'sanityinc-tomorrow-blue t))
+
+;;(use-package solarized-theme
+;;  :ensure t
+;;  :config
+;;  (load-theme 'solarized-light t))
 
 ;; (setq-default cursor-type 'bar)
 
 (setq create-lockfiles nil)
 
+(use-package ansi-color
+  :ensure t
+  :config
+  (defun colorize-compilation-buffer ()
+    (toggle-read-only)
+    (ansi-color-apply-on-region compilation-filter-start (point))
+    (toggle-read-only))
+  (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
+  (add-hook 'shell-mode-hook 'colorize-compilation-buffer))
+
+(use-package yasnippet
+  :ensure t)
+
+(use-package yasnippet-snippets
+  :ensure t)
+
+(use-package yasnippet-classic-snippets
+  :ensure t)
+
 (use-package lsp-mode
   :ensure t
   :init
-  (setq lsp-ui-sideline-diagnostic-max-lines 4))
+  (setq lsp-ui-sideline-diagnostic-max-lines 4)
+  (add-hook 'before-save-hook #'(lambda () (when (eq major-mode 'fsharp-mode)
+    (lsp-format-buffer)))))
 
 ;; For some reason it is required to do at least once
 ;; a call to lsp-ui-doc-show in order for this to work
@@ -121,10 +147,18 @@
  
 (use-package fsharp-mode
    :ensure t
-   :mode (("\\.fs$" .  fsharp-mode)
-	  ("\\.fsx$" .  fsharp-mode))
-   :hook ((fsharp-mode . company-mode)
-	  (fsharp-mode . (lambda () (lsp))))
+   :mode (("\\.fs$"  .  fsharp-mode)
+	  ("\\.fsx$" .  fsharp-mode)
+	  ("\\.fsi$" .  fsharp-mode))
+   :hook ((fsharp-mode      . company-mode)
+	  (fsharp-mode      . (lambda () (lsp)))
+	  (fsharp-mode-hook . highlight-indentation-mode))
+   :bind
+   (("C-<"     . 'fsharp-shift-region-left)
+    ("C->"     . 'fsharp-shift-region-right)
+    ("C-c C-i" . 'run-fsharp)
+    ("C-m"     . 'fsharp-newline-and-indent)
+    ("C-c C-a" . 'fsharp-find-alternate-file))
    :config
    (setq compile-command "dotnet watch run")
    (setq inferior-fsharp-program "dotnet fsi")
@@ -211,10 +245,6 @@
    :ensure t)
 
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(default ((t (:family "Menlo" :foundry "APPL" :slant normal :weight normal :height 140 :width normal)))))
 
 (use-package powerline
@@ -222,10 +252,4 @@
   :config
   (powerline-default-theme)
   (display-battery-mode -1))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(yaml-mode org-pdftools org-drill flymake-flycheck flycheck solarized-theme powerline transpose-frame dashboard all-the-icons projectile org-bullets eshell-syntax-highlighting multiple-cursors helm magit fsharp-mode company-quickhelp slime swiper lsp-sourcekit swift-mode python-mode lsp-python-ms tuareg nix-mode lsp-treemacs lsp-ui lsp-mode pastelmac-theme use-package)))
+
