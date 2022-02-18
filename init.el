@@ -7,15 +7,15 @@
 ;;   :config
 ;;   (load-theme 'pastelmac t))
 
-(use-package color-theme-sanityinc-tomorrow
-  :ensure t
-  :config
-  (load-theme 'sanityinc-tomorrow-blue t))
+;; (use-package color-theme-sanityinc-tomorrow
+  ;; :ensure t
+  ;; :config
+  ;; (load-theme 'sanityinc-tomorrow-blue t))
 
-;;(use-package solarized-theme
-;;  :ensure t
-;;  :config
-;;  (load-theme 'solarized-light t))
+;; (use-package solarized-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'solarized-light t))
 
 ;; (setq-default cursor-type 'bar)
 
@@ -34,10 +34,27 @@
 (use-package yasnippet
   :ensure t)
 
+(use-package elsa
+  :ensure t
+  :hook
+  (emacs-lisp-mode . (lambda () (flycheck-elsa-setup))))
+
+(use-package flycheck-elsa
+  :ensure t
+  :hook
+  ((emacs-lisp-mode . (lambda () (flycheck-mode)))
+   (emacs-lisp-mode . (lambda () (flymake-mode)))))
+
 (use-package yasnippet-snippets
   :ensure t)
 
 (use-package yasnippet-classic-snippets
+  :ensure t)
+
+(use-package flycheck
+  :ensure t)
+
+(use-package flymake-flycheck
   :ensure t)
 
 (use-package lsp-mode
@@ -96,9 +113,9 @@
   :init
   (global-set-key (kbd "\C-s") 'swiper))
    
-(use-package slime
-   :ensure t)
-(setq inferior-lisp-program "sbcl")
+;;(use-package slime
+;;   :ensure t)
+;; (setq inferior-lisp-program "sbcl")
    
 (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
 (lsp-register-client
@@ -143,20 +160,23 @@
    (setq company-quickhelp-delay '1.0)
    :config
    (company-quickhelp-mode nil)
-   (add-hook 'prog-mode-hook 'linum-mode))
+   (add-hook 'prog-mode-hook 'linum-mode)
+   :hook
+   ((emacs-lisp-mode . (lambda () (company-mode)))))
  
 (use-package fsharp-mode
    :ensure t
    :mode (("\\.fs$"  .  fsharp-mode)
 	  ("\\.fsx$" .  fsharp-mode)
 	  ("\\.fsi$" .  fsharp-mode))
-   :hook ((fsharp-mode      . company-mode)
-	  (fsharp-mode      . (lambda () (lsp))))
+   :hook ((fsharp-mode      . (lambda () (lsp))))
    :bind
-   (("C-<"     . 'fsharp-shift-region-left)
-    ("C->"     . 'fsharp-shift-region-right)
-    ("C-c C-m" . 'fsharp-newline-and-indent)
-    ("C-c C-a" . 'fsharp-find-alternate-file))
+   (("C-c C-,"     . 'fsharp-shift-region-left)
+    ("C-c C-."     . 'fsharp-shift-region-right)
+    ("C-o"         . 'fsharp-newline-and-indent)
+    ("C-c C-i"     . 'run-fsharp)
+    ("C-c C-a"     . 'fsharp-find-alternate-file)
+    ("M-h"         . 'fsharp-mark-phrase))
    :config
    (setq compile-command "dotnet watch run")
    (setq inferior-fsharp-program "dotnet fsi")
@@ -240,6 +260,10 @@
    :ensure t)
 
 (custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(default ((t (:family "Menlo" :foundry "APPL" :slant normal :weight normal :height 140 :width normal)))))
 
 (use-package powerline
@@ -247,3 +271,13 @@
   :config
   (powerline-default-theme)
   (display-battery-mode -1))
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("d543a5f82ce200d50bdce81b2ecc4db51422439ba7c0e6845483dd89566e4cf9" default))
+ '(package-selected-packages
+   '(flymake-flycheck flycheck yaml-mode ac-sly yasnippet-snippets yasnippet-classic-snippets use-package typescript-mode tuareg transpose-frame swiper swift-mode sly-repl-ansi-color sly-quicklisp slime python-mode projectile powerline org-bullets nix-mode multiple-cursors magit lsp-ui lsp-treemacs lsp-sourcekit lsp-python-ms helm fsharp-mode eshell-syntax-highlighting dashboard company-quickhelp color-theme-sanityinc-tomorrow all-the-icons)))
