@@ -7,17 +7,17 @@
 ;;   :config
 ;;   (load-theme 'pastelmac t))
 
-;; (use-package color-theme-sanityinc-tomorrow
-  ;; :ensure t
-  ;; :config
-  ;; (load-theme 'sanityinc-tomorrow-blue t))
+(use-package color-theme-sanityinc-tomorrow
+  :ensure t
+  :config
+  (load-theme 'sanityinc-tomorrow-blue t))
 
 ;; (use-package solarized-theme
 ;;   :ensure t
 ;;   :config
 ;;   (load-theme 'solarized-light t))
 
-;; (setq-default cursor-type 'bar)
+(setq-default cursor-type 'bar)
 
 (setq create-lockfiles nil)
 
@@ -25,103 +25,166 @@
   :ensure t
   :config
   (defun colorize-compilation-buffer ()
+    ;; (interactive)
     (toggle-read-only)
     (ansi-color-apply-on-region compilation-filter-start (point))
     (toggle-read-only))
-  (add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
-  (add-hook 'shell-mode-hook 'colorize-compilation-buffer))
+  (add-hook 'compilation-filter-hook 'colorize-compilation-buffer))
 
 (use-package yasnippet
-  :ensure t)
+  :ensure t
+  :config
+  (use-package yasnippet-snippets
+    :ensure t)
+  (use-package yasnippet-classic-snippets
+    :ensure t)
+  (yas-reload-all))
 
 (use-package elsa
   :ensure t
   :hook
-  (emacs-lisp-mode . (lambda () (flycheck-elsa-setup))))
-
-(use-package flycheck-elsa
-  :ensure t
-  :hook
-  ((emacs-lisp-mode . (lambda () (flycheck-mode)))
-   (emacs-lisp-mode . (lambda () (flymake-mode)))))
-
-(use-package yasnippet-snippets
-  :ensure t)
-
-(use-package yasnippet-classic-snippets
-  :ensure t)
+  (emacs-lisp-mode . (lambda () (flycheck-elsa-setup)))
+  :config
+  (use-package flycheck-elsa
+    :ensure t
+    :hook
+    ((emacs-lisp-mode . (lambda () (flycheck-mode)))
+     (emacs-lisp-mode . (lambda () (flymake-mode))))))
 
 (use-package flycheck
-  :ensure t)
+  :ensure t
+  :config
+  (use-package flymake-flycheck
+    :ensure t))
 
-(use-package flymake-flycheck
+(use-package diff-hl
   :ensure t)
 
 (use-package lsp-mode
   :ensure t
+  :hook (lsp-mode . lsp-lens-mode)
   :init
-  (setq lsp-ui-sideline-diagnostic-max-lines 4)
   (add-hook 'before-save-hook #'(lambda () (when (eq major-mode 'fsharp-mode)
-    (lsp-format-buffer)))))
+					     (lsp-format-buffer))))
+  :config
+  (use-package lsp-treemacs
+    :ensure t))
 
-;; For some reason it is required to do at least once
-;; a call to lsp-ui-doc-show in order for this to work
-(defun toggle-between-doc-show-hide ()
+(use-package dap-mode
+  :ensure t
+  :after lsp-mode
+  :config
+  ;; Enabling only some features
+  (setq dap-auto-configure-features '(sessions locals controls tooltip))
+  (dap-mode 1)
+  ;; The modes below are optional
+  (dap-ui-mode 1)
+  ;; enables mouse hover support
+  (dap-tooltip-mode 1)
+  ;; use tooltips for mouse hover
+  ;; if it is not enabled `dap-mode' will use the minibuffer.
+  (tooltip-mode 1)
+  ;; displays floating panel with debug buttons
+  ;; requies emacs 26+
+  (dap-ui-controls-mode 1)
+  (add-hook 'dap-stopped-hook
+            (lambda (arg) (call-interactively #'dap-hydra)))
+  :hook
+  (lsp-mode . dap-mode)
+  (lsp-mode . dap-ui-mode))
+
+(defun magueta/lsp-ui-doc-toggle ()
+  "For some reason it is required to do at least once a call to lsp-ui-doc-show in order for this to work."
   (interactive)
   (let ((frame (lsp-ui-doc--get-frame)))
     (cond ((frame-visible-p frame) (lsp-ui-doc-hide))
-          (t (lsp-ui-doc-show)))))
+	  (t (lsp-ui-doc-show)))))
 
 (use-package lsp-ui
   :ensure t
   :init
   (setq lsp-ui-doc-enable t)
+  (setq lsp-ui-sideline-diagnostic-max-lines 7)
   :bind
-  (("s-?" . 'toggle-between-doc-show-hide)))
+  (("s-?" . 'magueta/lsp-ui-doc-toggle)))
 
-(use-package lsp-treemacs
+(use-package lsp-metals
   :ensure t)
+
+(use-package scala-mode
+  :hook (scala-mode . (lambda () (lsp))))
+
+(use-package clojure-mode
+  :hook (clojure-mode . (lambda () (lsp))))
+
+;; Enable sbt mode for executing sbt commands
+(use-package sbt-mode
+  :commands sbt-start sbt-command
+  :config
+  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+  ;; allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map)
+  ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
+  (setq sbt:program-options '("-Dsbt.supershell=false")))
 
 (use-package nix-mode
   :ensure t
-  :hook (nix-mode . (lambda () (lsp))))
+  :hook (nix-mode . (lambda () (lsp)))
+  :config
+  (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
+		    :major-modes '(nix-mode)
+		    :server-id 'nix)))
 
 (use-package tuareg
   :ensure t
   :hook (tuareg-mode . (lambda () (lsp))))
 
-(use-package lsp-python-ms
-  :ensure t)
-
 (use-package python-mode
   :ensure t
   :after lsp-python-ms
-  :hook (python-mode . (lambda () (lsp))))
+  :hook (python-mode . (lambda () (lsp)))
+  :config
+  (use-package lsp-python-ms
+    :ensure t))
 
 (use-package swift-mode
   :ensure t
-  :hook (swift-mode . (lambda () (lsp))))
-
-(use-package lsp-sourcekit
+  :hook (swift-mode . (lambda () (lsp)))
   :after lsp-mode
+  :config  
+  (setq lsp-sourcekit-executable (string-trim (shell-command-to-string "xcrun --find sourcekit-lsp"))))
+
+
+(use-package racket-mode
   :ensure t
-  :config
-  (setq lsp-sourcekit-executable "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/sourcekit-lsp"))
+  :hook (racket-mode . (lambda () (lsp)))
+  :after lsp-mode)
 
 (use-package swiper
   :ensure t
   :init
   (global-set-key (kbd "\C-s") 'swiper))
    
-;;(use-package slime
-;;   :ensure t)
-;; (setq inferior-lisp-program "sbcl")
-   
-(add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
-(lsp-register-client
-  (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
-		   :major-modes '(nix-mode)
-		   :server-id 'nix))
+(use-package slime
+  :ensure t
+  :hook
+  (lisp-mode . (lambda () (auto-complete-mode)))
+  (slime-mode . (lambda () (set-up-slime-ac)))
+  (slime-repl-mode . (lambda () (set-up-slime-ac)))
+  (lisp-mode . (lambda () (company-mode)))
+  :config
+  (setq inferior-lisp-program "sbcl")
+  (use-package ac-slime
+    :ensure t
+    :after slime)
+  (use-package auto-complete
+    :ensure t
+    :after slime))
   
 (use-package comint
    :config
@@ -157,10 +220,13 @@
 (use-package company-quickhelp
    :ensure t
    :init
-   (setq company-quickhelp-delay '1.0)
+   (setq company-tooltip-limit 10 ; bigger popup window
+	 company-tooltip-minimum-width 15
+	 company-tooltip-align-annotations t ; align annotations to the right tooltip border
+	 company-quickhelp-delay '1.0)
    :config
    (company-quickhelp-mode nil)
-   (add-hook 'prog-mode-hook 'linum-mode)
+   (add-hook 'prog-mode-hook 'linum-relative-mode)
    :hook
    ((emacs-lisp-mode . (lambda () (company-mode)))))
  
@@ -248,7 +314,7 @@
   (dashboard-setup-startup-hook)
   (setq dashboard-footer-messages '()))
 
-(fringe-mode 1)
+(setq fringe-mode 'left-only)
 (scroll-bar-mode -1)
 (menu-bar-mode +1)
 (tool-bar-mode -1)
@@ -280,4 +346,4 @@
  '(custom-safe-themes
    '("d543a5f82ce200d50bdce81b2ecc4db51422439ba7c0e6845483dd89566e4cf9" default))
  '(package-selected-packages
-   '(flymake-flycheck flycheck yaml-mode ac-sly yasnippet-snippets yasnippet-classic-snippets use-package typescript-mode tuareg transpose-frame swiper swift-mode sly-repl-ansi-color sly-quicklisp slime python-mode projectile powerline org-bullets nix-mode multiple-cursors magit lsp-ui lsp-treemacs lsp-sourcekit lsp-python-ms helm fsharp-mode eshell-syntax-highlighting dashboard company-quickhelp color-theme-sanityinc-tomorrow all-the-icons)))
+   '(auto-package-update linum-relative paredit smartparens rainbow-delimiters rainbow-mode geiser-racket flymake-racket racket-mode ac-slime flycheck-clojure clojure-mode sbt-mode dockerfile-mode purescript-mode dap-mode flymake-flycheck flycheck yaml-mode yasnippet-snippets yasnippet-classic-snippets use-package typescript-mode tuareg transpose-frame swiper swift-mode slime python-mode projectile powerline org-bullets nix-mode multiple-cursors magit lsp-ui lsp-treemacs lsp-sourcekit lsp-python-ms helm fsharp-mode eshell-syntax-highlighting dashboard company-quickhelp color-theme-sanityinc-tomorrow all-the-icons)))
