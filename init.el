@@ -2,22 +2,22 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-;; (use-package pastelmac-theme
-;;   :ensure t
-;;   :config
-;;   (load-theme 'pastelmac t))
-
-(use-package color-theme-sanityinc-tomorrow
+(use-package pastelmac-theme
   :ensure t
   :config
-  (load-theme 'sanityinc-tomorrow-blue t))
+  (load-theme 'pastelmac t))
+
+;;(use-package color-theme-sanityinc-tomorrow
+;;  :ensure t
+;;  :config
+;;  (load-theme 'sanityinc-tomorrow-blue t))
 
 ;; (use-package solarized-theme
 ;;   :ensure t
 ;;   :config
 ;;   (load-theme 'solarized-light t))
 
-(setq-default cursor-type 'bar)
+;; (setq-default cursor-type 'bar)
 
 (setq create-lockfiles nil)
 
@@ -264,15 +264,9 @@
 (use-package multiple-cursors
    :ensure t
    :config
+   (global-set-key (kbd "C-d") 'mc/mark-next-like-this-word)
    (global-set-key (kbd "C-c m c") 'mc/edit-lines))
 
-;; (use-package plantuml-mode
-;;    :ensure t
-;;    :init
-;;    (setq org-plantuml-jar-path (expand-file-name "./sources/plantuml-jar-gplv2-1.2021.8/plantuml.jar"))
-;;    (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
-;;    (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
-  
 (use-package eshell-syntax-highlighting
   :ensure t
   :config
@@ -284,6 +278,7 @@
   (define-key global-map "\C-cl" 'org-store-link)
   (define-key global-map "\C-ca" 'org-agenda)
   (setq org-log-done 'time)
+  (setq org-confirm-babel-evaluate nil)
   (setq org-agenda-files (list "./Agenda/work.org"
 			      "./Agenda/personal.org"))
   (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)" "CANCELLED(c)"))))
@@ -291,8 +286,16 @@
 (use-package org-bullets
   :ensure t
   :hook
-  ((org-mode-hook . (lambda () (org-bullets-mode)))))
-  
+  ((org-mode-hook . org-bullets-mode)))
+
+(use-package plantuml-mode
+  :ensure t
+  :after org
+  :config
+  (setq org-plantuml-jar-path (expand-file-name "/nix/store/2hsb1zzk5vkms22r4qadrwkwsdb7vx33-plantuml-1.2021.16/lib/plantuml.jar"))
+  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+  (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
+
 (use-package projectile
   :ensure t
   :config
@@ -330,7 +333,14 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Menlo" :foundry "APPL" :slant normal :weight normal :height 140 :width normal)))))
+ '(default ((t (:family "Menlo" :foundry "APPL" :slant normal :weight normal :height 140 :width normal))))
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "systemTealColor"))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "Brown"))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "Blue"))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "Orange"))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "Purple"))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "dark green"))))
+ '(rainbow-delimiters-depth-9-face ((t (:foreground "indian red")))))
 
 (use-package powerline
   :ensure t
@@ -344,6 +354,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("d543a5f82ce200d50bdce81b2ecc4db51422439ba7c0e6845483dd89566e4cf9" default))
+   '("465f04ecb7486d45ed9e186588e16b0b2e7a8fc04d7d355d0ba9c0c4ea3fb6de" "4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3" "d543a5f82ce200d50bdce81b2ecc4db51422439ba7c0e6845483dd89566e4cf9" default))
+ '(elfeed-feeds
+   '("https://marcosmagueta.com/static/rss.xml" "https://sensusfidelium.com/feed" "https://voegelinview.com/feed/" "https://rothbardbrasil.com/feed/" "http://aleteia.org/feed/" "file:///Users/mmagueta/Projects/Personal/Blog/generated/static/rss.xml"))
  '(package-selected-packages
-   '(auto-package-update linum-relative paredit smartparens rainbow-delimiters rainbow-mode geiser-racket flymake-racket racket-mode ac-slime flycheck-clojure clojure-mode sbt-mode dockerfile-mode purescript-mode dap-mode flymake-flycheck flycheck yaml-mode yasnippet-snippets yasnippet-classic-snippets use-package typescript-mode tuareg transpose-frame swiper swift-mode slime python-mode projectile powerline org-bullets nix-mode multiple-cursors magit lsp-ui lsp-treemacs lsp-sourcekit lsp-python-ms helm fsharp-mode eshell-syntax-highlighting dashboard company-quickhelp color-theme-sanityinc-tomorrow all-the-icons)))
+   '(org-drill command-log-mode multi-term lsp-pyright hy-mode htmlize elfeed xmlgen auto-package-update linum-relative paredit smartparens rainbow-delimiters rainbow-mode geiser-racket flymake-racket racket-mode ac-slime flycheck-clojure clojure-mode sbt-mode dockerfile-mode purescript-mode dap-mode flymake-flycheck flycheck yaml-mode yasnippet-snippets yasnippet-classic-snippets use-package typescript-mode tuareg transpose-frame swiper swift-mode slime python-mode projectile powerline org-bullets nix-mode multiple-cursors magit lsp-ui lsp-treemacs lsp-sourcekit lsp-python-ms helm fsharp-mode eshell-syntax-highlighting dashboard company-quickhelp color-theme-sanityinc-tomorrow all-the-icons)))
