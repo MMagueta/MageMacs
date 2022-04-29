@@ -20,6 +20,13 @@
 ;; (setq-default cursor-type 'bar)
 
 (setq create-lockfiles nil)
+(setq make-backup-files nil)
+
+(use-package elfeed
+  :ensure t
+  :config
+  (setq elfeed-feeds
+	'(("https://rothbardbrasil.com/feed/" blog economics))))
 
 (use-package ansi-color
   :ensure t
@@ -108,27 +115,27 @@
   :bind
   (("s-?" . 'magueta/lsp-ui-doc-toggle)))
 
-(use-package lsp-metals
-  :ensure t)
+;; (use-package lsp-metals
+;;   :ensure t)
 
-(use-package scala-mode
-  :hook (scala-mode . (lambda () (lsp))))
+;; (use-package scala-mode
+;;   :hook (scala-mode . (lambda () (lsp))))
 
-(use-package clojure-mode
-  :hook (clojure-mode . (lambda () (lsp))))
+;; (use-package clojure-mode
+;;   :hook (clojure-mode . (lambda () (lsp))))
 
-;; Enable sbt mode for executing sbt commands
-(use-package sbt-mode
-  :commands sbt-start sbt-command
-  :config
-  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
-  ;; allows using SPACE when in the minibuffer
-  (substitute-key-definition
-   'minibuffer-complete-word
-   'self-insert-command
-   minibuffer-local-completion-map)
-  ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
-  (setq sbt:program-options '("-Dsbt.supershell=false")))
+;; ;; Enable sbt mode for executing sbt commands
+;; (use-package sbt-mode
+;;   :commands sbt-start sbt-command
+;;   :config
+;;   ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+;;   ;; allows using SPACE when in the minibuffer
+;;   (substitute-key-definition
+;;    'minibuffer-complete-word
+;;    'self-insert-command
+;;    minibuffer-local-completion-map)
+;;   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
+;;   (setq sbt:program-options '("-Dsbt.supershell=false")))
 
 (use-package nix-mode
   :ensure t
@@ -137,20 +144,23 @@
   (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
   (lsp-register-client
    (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
-		    :major-modes '(nix-mode)
-		    :server-id 'nix)))
+                    :major-modes '(nix-mode)
+                    :server-id 'nix)))
 
-(use-package tuareg
-  :ensure t
-  :hook (tuareg-mode . (lambda () (lsp))))
+;; (use-package tuareg
+;;   :ensure t
+;;   :hook (tuareg-mode . (lambda () (lsp))))
 
 (use-package python-mode
   :ensure t
-  :after lsp-python-ms
-  :hook (python-mode . (lambda () (lsp)))
   :config
   (use-package lsp-python-ms
-    :ensure t))
+    :ensure t
+    :hook (python-mode . (lambda ()
+                           (require 'lsp-python-ms)
+                           (lsp)))
+    :init
+    (setq lsp-python-ms-executable (executable-find "python-language-server"))))
 
 (use-package swift-mode
   :ensure t
@@ -159,11 +169,10 @@
   :config  
   (setq lsp-sourcekit-executable (string-trim (shell-command-to-string "xcrun --find sourcekit-lsp"))))
 
-
-(use-package racket-mode
-  :ensure t
-  :hook (racket-mode . (lambda () (lsp)))
-  :after lsp-mode)
+;; (use-package racket-mode
+;;   :ensure t
+;;   :hook (racket-mode . (lambda () (lsp)))
+;;   :after lsp-mode)
 
 (use-package swiper
   :ensure t
@@ -216,7 +225,10 @@
  
    (add-hook 'kill-emacs-hook 'comint-write-input-ring-all-buffers)
    (add-hook 'kill-buffer-hook 'comint-write-input-ring))
- 
+
+(use-package linum-relative
+  :ensure t)
+
 (use-package company-quickhelp
    :ensure t
    :init
@@ -271,17 +283,32 @@
   :ensure t
   :config
   (eshell-syntax-highlighting-global-mode +1))
-  
+
+(use-package org-super-agenda
+  :ensure t
+  :config
+  (setq org-agenda-files (list "./sources/Agenda.org"))
+  (setq org-super-agenda-groups
+	'((:name "Next Items"
+		 :time-grid t
+               :tag ("NEXT" "outbox"))
+          (:name "Important"
+		 :priority "A")
+          (:name "Quick Picks"
+		 :effort< "0:30")
+          (:priority<= "B"
+                       :scheduled future
+                       :order 1)))
+  :bind
+  (("C-c a" . 'org-agenda)))
+
 (use-package org
   :ensure t
   :config
   (define-key global-map "\C-cl" 'org-store-link)
-  (define-key global-map "\C-ca" 'org-agenda)
+  ;; (define-key global-map "\C-ca" 'org-agenda)
   (setq org-log-done 'time)
-  (setq org-confirm-babel-evaluate nil)
-  (setq org-agenda-files (list "./Agenda/work.org"
-			      "./Agenda/personal.org"))
-  (setq org-todo-keywords '((sequence "TODO(t)" "|" "DONE(d)" "CANCELLED(c)"))))
+  (setq org-confirm-babel-evaluate nil))
 
 (use-package org-bullets
   :ensure t
@@ -307,15 +334,19 @@
 
 (use-package dashboard
   :ensure t
-  :diminish dashboard-mode
+  :after all-the-icons
+  ;; :diminish dashboard-mode
   :config
-  (setq dashboard-banner-logo-title "Welcome to MageMacs, a magic GNU Emacs customization")
-  (setq dashboard-startup-banner "./sources/images/emacs.svg")
-  (setq dashboard-items '((recents  . 10)
-			  (bookmarks . 10)
-		          (projects . 10)))
   (dashboard-setup-startup-hook)
-  (setq dashboard-footer-messages '()))
+  (setq dashboard-center-content t)
+  ;; (setq dashboard-set-file-icons t)
+  (setq dashboard-startup-banner "~/.emacs.d/sources/emacs.svg")
+  (setq dashboard-banner-logo-title "Welcome to MageMacs, a magic GNU Emacs customization")
+  (setq dashboard-items '((recents  . 5)
+			  (bookmarks . 5)
+		          (projects . 5)))
+  (setq dashboard-center-content t)
+  (setq dashboard-footer-messages '("Quod oculus non vidit, nec auris audivit - I Corinthios II,IX")))
 
 (setq fringe-mode 'left-only)
 (scroll-bar-mode -1)
@@ -329,10 +360,6 @@
    :ensure t)
 
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(default ((t (:family "Menlo" :foundry "APPL" :slant normal :weight normal :height 140 :width normal))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "systemTealColor"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "Brown"))))
@@ -347,15 +374,3 @@
   :config
   (powerline-default-theme)
   (display-battery-mode -1))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-safe-themes
-   '("465f04ecb7486d45ed9e186588e16b0b2e7a8fc04d7d355d0ba9c0c4ea3fb6de" "4c56af497ddf0e30f65a7232a8ee21b3d62a8c332c6b268c81e9ea99b11da0d3" "d543a5f82ce200d50bdce81b2ecc4db51422439ba7c0e6845483dd89566e4cf9" default))
- '(elfeed-feeds
-   '("https://marcosmagueta.com/static/rss.xml" "https://sensusfidelium.com/feed" "https://voegelinview.com/feed/" "https://rothbardbrasil.com/feed/" "http://aleteia.org/feed/" "file:///Users/mmagueta/Projects/Personal/Blog/generated/static/rss.xml"))
- '(package-selected-packages
-   '(org-drill command-log-mode multi-term lsp-pyright hy-mode htmlize elfeed xmlgen auto-package-update linum-relative paredit smartparens rainbow-delimiters rainbow-mode geiser-racket flymake-racket racket-mode ac-slime flycheck-clojure clojure-mode sbt-mode dockerfile-mode purescript-mode dap-mode flymake-flycheck flycheck yaml-mode yasnippet-snippets yasnippet-classic-snippets use-package typescript-mode tuareg transpose-frame swiper swift-mode slime python-mode projectile powerline org-bullets nix-mode multiple-cursors magit lsp-ui lsp-treemacs lsp-sourcekit lsp-python-ms helm fsharp-mode eshell-syntax-highlighting dashboard company-quickhelp color-theme-sanityinc-tomorrow all-the-icons)))
