@@ -195,16 +195,16 @@
   (setq tuareg-match-patterns-aligned t)
   (setq tuareg-indent-align-with-first-arg nil))
 
-(use-package python-mode
-  :ensure t
-  :config
-  (use-package lsp-python-ms
-    :ensure t
-    :hook (python-mode . (lambda ()
-                           (require 'lsp-python-ms)
-                           (lsp)))
-    :init
-    (setq lsp-python-ms-executable (executable-find "python-language-server"))))
+;; (use-package python-mode
+;;   :ensure t
+;;   :config
+;;   (use-package lsp-python-ms
+;;     :ensure t
+;;     :hook (python-mode . (lambda ()
+;;                            (require 'lsp-python-ms)
+;;                            (lsp)))
+;;     :init
+;;     (setq lsp-python-ms-executable (executable-find "python-language-server"))))
 
 ;; (use-package swift-mode
 ;;   :ensure t
@@ -285,10 +285,23 @@
 (use-package company-quickhelp
    :ensure t
    :init
-   (setq company-tooltip-limit 10 ; bigger popup window
+   (require 'color)
+   (setq company-tooltip-limit 10
+	 company-tooltip-flip-when-above t
+	 company-tooltip-maximum-width 70
 	 company-tooltip-minimum-width 15
+	 company-quickhelp-color-background (color-darken-name (face-attribute 'default :background) 20)
+	 pos-tip-foreground-color (face-attribute 'default :foreground) ; set pos-tip font color to the same as the theme
 	 company-tooltip-align-annotations t ; align annotations to the right tooltip border
-	 company-quickhelp-delay '1.0)
+	 company-quickhelp-delay '1.0
+	 company-quickhelp-use-propertized-text t)
+   (let ((bg (face-attribute 'default :background)))
+     (custom-set-faces
+      `(company-tooltip ((t (:inherit default :background ,(color-darken-name bg 10)))))
+      `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
+      `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
+      `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
+      `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
    :config
    (company-quickhelp-mode nil)
    (add-hook 'prog-mode-hook 'linum-relative-mode)
@@ -444,7 +457,14 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:family "Menlo" :foundry "APPL" :slant normal :weight normal :height 140 :width normal))))
+ '(default ((t (:family "Menlo" :foundry "nil" :slant normal :weight regular :height 140 :width normal))))
+ '(company-scrollbar-bg ((t (:background "#09f0161526a6"))) t)
+ '(company-scrollbar-fg ((t (:background "#097c151424e4"))) t)
+ '(company-tooltip ((t (:inherit default :background "#082112111f9f"))))
+ '(company-tooltip-common ((t (:inherit font-lock-constant-face))))
+ '(company-tooltip-scrollbar-thumb ((t (:background "#097c151424e4"))))
+ '(company-tooltip-scrollbar-track ((t (:background "#09f0161526a6"))))
+ '(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "systemTealColor"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "Brown"))))
  '(rainbow-delimiters-depth-3-face ((t (:foreground "Blue"))))
@@ -463,5 +483,5 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(multi-term csharp-mode emacs-lisp-mode yaml-mode org-tree-slide rainbow-delimiters helm-clojuredocs flycheck-clojure ob-clojure cider c-or-c++-mode flycheck-plantuml org-present hide-mode-line purescript-mode org-drill org-noter-pdftools org-pdftools pdf-tools color-theme-sanityinc-tomorrow request eglot-fsharp utop tuareg powerline transpose-frame dashboard all-the-icons projectile plantuml-mode org-bullets org-super-agenda eshell-syntax-highlighting multiple-cursors helm magit fsharp-mode company-quickhelp linum-relative swiper swift-mode lsp-python-ms python-mode nix-mode lsp-ui dap-mode lsp-treemacs lsp-mode diff-hl flymake-flycheck flycheck flycheck-elsa elsa yasnippet-classic-snippets yasnippet-snippets yasnippet elfeed solarized-theme use-package)))
+ '(display-time-mode t)
+ '(tool-bar-mode nil))
