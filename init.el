@@ -2,12 +2,12 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
-(use-package pastelmac-theme
-  :ensure t
-  :config
-  (load-theme 'pastelmac t))
+;; (use-package pastelmac-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'pastelmac t))
 
-;;(use-package color-theme-sanityinc-tomorrow
+;; (use-package color-theme-sanityinc-tomorrow
 ;;  :ensure t
 ;;  :config
 ;;  (load-theme 'sanityinc-tomorrow-blue t))
@@ -16,6 +16,16 @@
 ;;   :ensure t
 ;;   :config
 ;;   (load-theme 'solarized-light t))
+
+(use-package exotica-theme
+  :ensure t
+  :config
+  (load-theme 'exotica t))
+
+;; (use-package jazz-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'jazz-light t))
 
 ;; (setq-default cursor-type 'bar)
 
@@ -27,6 +37,9 @@
   :config
   (setq elfeed-feeds
 	'(("https://rothbardbrasil.com/feed/" blog economics))))
+
+(use-package request
+  :ensure t)
 
 (use-package ansi-color
   :ensure t
@@ -77,28 +90,28 @@
   (use-package lsp-treemacs
     :ensure t))
 
-(use-package dap-mode
-  :ensure t
-  :after lsp-mode
-  :config
-  ;; Enabling only some features
-  (setq dap-auto-configure-features '(sessions locals controls tooltip))
-  (dap-mode 1)
-  ;; The modes below are optional
-  (dap-ui-mode 1)
-  ;; enables mouse hover support
-  (dap-tooltip-mode 1)
-  ;; use tooltips for mouse hover
-  ;; if it is not enabled `dap-mode' will use the minibuffer.
-  (tooltip-mode 1)
-  ;; displays floating panel with debug buttons
-  ;; requies emacs 26+
-  (dap-ui-controls-mode 1)
-  (add-hook 'dap-stopped-hook
-            (lambda (arg) (call-interactively #'dap-hydra)))
-  :hook
-  (lsp-mode . dap-mode)
-  (lsp-mode . dap-ui-mode))
+;; (use-package dap-mode
+;;   :ensure t
+;;   :after lsp-mode
+;;   :config
+;;   ;; Enabling only some features
+;;   (setq dap-auto-configure-features '(sessions locals controls tooltip))
+;;   (dap-mode 1)
+;;   ;; The modes below are optional
+;;   (dap-ui-mode 1)
+;;   ;; enables mouse hover support
+;;   (dap-tooltip-mode 1)
+;;   ;; use tooltips for mouse hover
+;;   ;; if it is not enabled `dap-mode' will use the minibuffer.
+;;   (tooltip-mode 1)
+;;   ;; displays floating panel with debug buttons
+;;   ;; requies emacs 26+
+;;   (dap-ui-controls-mode 1)
+;;   (add-hook 'dap-stopped-hook
+;;             (lambda (arg) (call-interactively #'dap-hydra)))
+;;   :hook
+;;   (lsp-mode . dap-mode)
+;;   (lsp-mode . dap-ui-mode))
 
 (defun magueta/lsp-ui-doc-toggle ()
   "For some reason it is required to do at least once a call to lsp-ui-doc-show in order for this to work."
@@ -115,26 +128,54 @@
   :bind
   (("s-?" . 'magueta/lsp-ui-doc-toggle)))
 
+(defun emacs-lisp/eval-entire-expression ()
+  (interactive)
+  (forward-sentence)
+  (minibuffer-message (eval-last-sexp (sexp-at-point))))
+
+(define-key emacs-lisp-mode-map (kbd "C-c C-e") 'eval-buffer)
+(define-key emacs-lisp-mode-map (kbd "C-c C-c") 'emacs-lisp/eval-entire-expression)
+
 ;; (use-package lsp-metals
 ;;   :ensure t)
 
 ;; (use-package scala-mode
+;;   :ensure t
 ;;   :hook (scala-mode . (lambda () (lsp))))
 
-;; (use-package clojure-mode
-;;   :hook (clojure-mode . (lambda () (lsp))))
+(use-package rainbow-delimiters
+  :ensure t
+  :hook
+  (clojure-mode . rainbow-delimiters-mode)
+  (lisp-mode . rainbow-delimiters-mode)
+  (emacs-lisp-mode . rainbow-delimiters-mode))
 
-;; ;; Enable sbt mode for executing sbt commands
+;; (add-hook 'c-or-c++-mode #'(lambda () (lsp)))
+
+(use-package clojure-mode
+  :ensure t
+  :hook (clojure-mode . (lambda () (lsp)))
+  :config
+  (setq org-babel-clojure-backend 'cider)
+  :init
+  (use-package cider
+    :ensure t))
+
+;; (use-package purescript-mode
+;;   :ensure t
+;;   :hook (purescript-mode . (lambda () (lsp))))
+
+;; ;; ;; Enable sbt mode for executing sbt commands
 ;; (use-package sbt-mode
 ;;   :commands sbt-start sbt-command
 ;;   :config
-;;   ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
-;;   ;; allows using SPACE when in the minibuffer
+;; ;;   ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+;; ;;   ;; allows using SPACE when in the minibuffer
 ;;   (substitute-key-definition
 ;;    'minibuffer-complete-word
 ;;    'self-insert-command
 ;;    minibuffer-local-completion-map)
-;;   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
+;; ;;   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
 ;;   (setq sbt:program-options '("-Dsbt.supershell=false")))
 
 (use-package nix-mode
@@ -147,9 +188,12 @@
                     :major-modes '(nix-mode)
                     :server-id 'nix)))
 
-;; (use-package tuareg
-;;   :ensure t
-;;   :hook (tuareg-mode . (lambda () (lsp))))
+(use-package tuareg
+  :ensure t
+  :hook (tuareg-mode . (lambda () (lsp)))
+  :config
+  (setq tuareg-match-patterns-aligned t)
+  (setq tuareg-indent-align-with-first-arg nil))
 
 (use-package python-mode
   :ensure t
@@ -162,12 +206,12 @@
     :init
     (setq lsp-python-ms-executable (executable-find "python-language-server"))))
 
-(use-package swift-mode
-  :ensure t
-  :hook (swift-mode . (lambda () (lsp)))
-  :after lsp-mode
-  :config  
-  (setq lsp-sourcekit-executable (string-trim (shell-command-to-string "xcrun --find sourcekit-lsp"))))
+;; (use-package swift-mode
+;;   :ensure t
+;;   :hook (swift-mode . (lambda () (lsp)))
+;;   :after lsp-mode
+;;   :config  
+;;   (setq lsp-sourcekit-executable (string-trim (shell-command-to-string "xcrun --find sourcekit-lsp"))))
 
 ;; (use-package racket-mode
 ;;   :ensure t
@@ -178,6 +222,10 @@
   :ensure t
   :init
   (global-set-key (kbd "\C-s") 'swiper))
+
+(global-set-key (kbd "s-e") 'multi-term)
+(global-set-key (kbd "s-1") 'async-shell-command)
+(global-set-key (kbd "s-t") 'transpose-frame)
    
 (use-package slime
   :ensure t
@@ -194,7 +242,12 @@
   (use-package auto-complete
     :ensure t
     :after slime))
-  
+
+;; (use-package sly
+;;   :ensure t
+;;   :config
+;;   (setq inferior-lisp-program "/nix/store/774bf5ksbhl7pbwxznk1wncw13ymak6k-sbcl-2.2.4/bin/sbcl"))
+
 (use-package comint
    :config
    (defun comint-write-history-on-exit (process event)
@@ -260,11 +313,15 @@
    (setq inferior-fsharp-program "dotnet fsi")
    (add-hook 'inferior-fsharp-mode-hook 'turn-on-comint-history))
    
+(use-package csharp-mode
+   :ensure t
+   :hook ((csharp-mode . (lambda () (lsp)))))
+
 (use-package magit
    :ensure t
    :init
    (global-set-key (kbd "C-x g") 'magit-status))
-   
+
 (use-package helm
    :ensure t
    :init
@@ -284,24 +341,6 @@
   :config
   (eshell-syntax-highlighting-global-mode +1))
 
-(use-package org-super-agenda
-  :ensure t
-  :config
-  (setq org-agenda-files (list "./sources/Agenda.org"))
-  (setq org-super-agenda-groups
-	'((:name "Next Items"
-		 :time-grid t
-               :tag ("NEXT" "outbox"))
-          (:name "Important"
-		 :priority "A")
-          (:name "Quick Picks"
-		 :effort< "0:30")
-          (:priority<= "B"
-                       :scheduled future
-                       :order 1)))
-  :bind
-  (("C-c a" . 'org-agenda)))
-
 (use-package org
   :ensure t
   :config
@@ -309,6 +348,47 @@
   ;; (define-key global-map "\C-ca" 'org-agenda)
   (setq org-log-done 'time)
   (setq org-confirm-babel-evaluate nil))
+
+;; org stuff
+(use-package org-super-agenda
+  :ensure t
+  :after org
+  :config
+  (org-super-agenda-mode t)
+  (setq org-agenda-custom-commands
+        '(("z" "Super view"
+           ((agenda "" ((org-agenda-span 'day)
+                        (org-super-agenda-groups
+                         '((:name "Today"
+                                  :time-grid t
+                                  :date today
+                                  :todo "TODAY"
+                                  :scheduled today
+                                  :order 1)))))
+            (alltodo "" ((org-agenda-overriding-header "")
+                         (org-super-agenda-groups
+                          '((:name "Important"
+                                   :tag "Important"
+                                   :priority "A"
+                                   :order 2)
+                            (:name "Next to do"
+                                   :todo "NEXT"
+                                   :order 5)
+                            (:name "Personal"
+                                   :tag "@personal"
+                                   :order 10)
+                            (:name "Work"
+                                   :tag "@work"
+                                   :order 15)
+                            (:name "To read"
+                                   :tag "Read"
+                                   :order 30)
+                            (:name "Waiting"
+                                   :todo "WAITING"
+                                   :order 40)
+                            (:name "Due Today"
+                                   :deadline today
+                                   :order 2))))))))))
 
 (use-package org-bullets
   :ensure t
@@ -319,7 +399,7 @@
   :ensure t
   :after org
   :config
-  (setq org-plantuml-jar-path (expand-file-name "/nix/store/2hsb1zzk5vkms22r4qadrwkwsdb7vx33-plantuml-1.2021.16/lib/plantuml.jar"))
+  (setq org-plantuml-jar-path (expand-file-name "/nix/store/v0h307n0wjp8hmr4dzyv07j0j7g6cb3v-plantuml-1.2022.3/lib/plantuml.jar"))
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
 
@@ -340,7 +420,7 @@
   (dashboard-setup-startup-hook)
   (setq dashboard-center-content t)
   ;; (setq dashboard-set-file-icons t)
-  (setq dashboard-startup-banner "~/.emacs.d/sources/emacs.svg")
+  (setq dashboard-startup-banner "/Users/mmagueta/.emacs.d/sources/emacs.svg")
   (setq dashboard-banner-logo-title "Welcome to MageMacs, a magic GNU Emacs customization")
   (setq dashboard-items '((recents  . 5)
 			  (bookmarks . 5)
@@ -360,6 +440,10 @@
    :ensure t)
 
 (custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
  '(default ((t (:family "Menlo" :foundry "APPL" :slant normal :weight normal :height 140 :width normal))))
  '(rainbow-delimiters-depth-1-face ((t (:foreground "systemTealColor"))))
  '(rainbow-delimiters-depth-2-face ((t (:foreground "Brown"))))
@@ -374,3 +458,10 @@
   :config
   (powerline-default-theme)
   (display-battery-mode -1))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(multi-term csharp-mode emacs-lisp-mode yaml-mode org-tree-slide rainbow-delimiters helm-clojuredocs flycheck-clojure ob-clojure cider c-or-c++-mode flycheck-plantuml org-present hide-mode-line purescript-mode org-drill org-noter-pdftools org-pdftools pdf-tools color-theme-sanityinc-tomorrow request eglot-fsharp utop tuareg powerline transpose-frame dashboard all-the-icons projectile plantuml-mode org-bullets org-super-agenda eshell-syntax-highlighting multiple-cursors helm magit fsharp-mode company-quickhelp linum-relative swiper swift-mode lsp-python-ms python-mode nix-mode lsp-ui dap-mode lsp-treemacs lsp-mode diff-hl flymake-flycheck flycheck flycheck-elsa elsa yasnippet-classic-snippets yasnippet-snippets yasnippet elfeed solarized-theme use-package)))
