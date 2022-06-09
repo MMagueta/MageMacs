@@ -1,7 +1,7 @@
 (require 'use-package)
 
 ;; (use-package pastelmac-theme
-;;   :ensure t)
+;;    :ensure t)
 
 ;; (use-package color-theme-sanityinc-tomorrow
 ;;  :ensure t)
@@ -10,10 +10,10 @@
 ;;   :ensure t)
 
 ;; (use-package exotica-theme
-;;   :ensure t)
+  ;; :ensure t)
 
-(use-package jazz-theme
-  :ensure t)
+;; (use-package jazz-theme
+;;   :ensure t)
 
 (use-package powerline
   :ensure t
@@ -33,7 +33,7 @@
 (display-battery-mode t)
 (display-time-mode t)
 
-(load-theme 'jazz t)
+(load-theme 'pastelmac t)
 
 (custom-set-faces
  '(company-tooltip ((t (:inherit default :background "#000000000000"))))

@@ -82,12 +82,12 @@
   :bind
   (("s-?" . 'magueta/lsp-ui-doc-toggle)))
 
-;; (use-package lsp-metals
-;;   :ensure t)
+(use-package lsp-metals
+  :ensure t)
 
-;; (use-package scala-mode
-;;   :ensure t
-;;   :hook (scala-mode . (lambda () (lsp))))
+(use-package scala-mode
+  :ensure t
+  :hook (scala-mode . (lambda () (lsp))))
 
 (use-package rainbow-delimiters
   :ensure t
@@ -111,18 +111,17 @@
 ;;   :ensure t
 ;;   :hook (purescript-mode . (lambda () (lsp))))
 
-;; ;; ;; Enable sbt mode for executing sbt commands
-;; (use-package sbt-mode
-;;   :commands sbt-start sbt-command
-;;   :config
-;; ;;   ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
-;; ;;   ;; allows using SPACE when in the minibuffer
-;;   (substitute-key-definition
-;;    'minibuffer-complete-word
-;;    'self-insert-command
-;;    minibuffer-local-completion-map)
-;; ;;   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
-;;   (setq sbt:program-options '("-Dsbt.supershell=false")))
+(use-package sbt-mode
+  :commands sbt-start sbt-command
+  :config
+   ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+   ;; allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map)
+  ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
+  (setq sbt:program-options '("-Dsbt.supershell=false")))
 
 (use-package nix-mode
   :ensure t
@@ -201,6 +200,7 @@
 	 company-tooltip-flip-when-above t
 	 company-tooltip-maximum-width 70
 	 company-tooltip-minimum-width 15
+	 company-quickhelp-color-foreground (color-lighten-name (face-attribute 'default :foreground) 0)
 	 company-quickhelp-color-background (color-darken-name (face-attribute 'default :background) 20)
 	 pos-tip-foreground-color (face-attribute 'default :foreground) ; set pos-tip font color to the same as the theme
 	 company-tooltip-align-annotations t ; align annotations to the right tooltip border
@@ -218,6 +218,7 @@
    (add-hook 'prog-mode-hook 'linum-relative-mode)
    :hook
    ((emacs-lisp-mode . (lambda () (company-mode)))))
+
  
 (use-package fsharp-mode
    :ensure t
@@ -340,7 +341,7 @@
   (dashboard-setup-startup-hook)
   (setq dashboard-center-content t)
   ;; (setq dashboard-set-file-icons t)
-  (setq dashboard-startup-banner "/Users/mmagueta/.emacs.d/sources/emacs.svg")
+  (setq dashboard-startup-banner "/home/mmagueta/.emacs.d/sources/WarpBlock.png")
   (setq dashboard-banner-logo-title "Welcome to MageMacs, a magic GNU Emacs customization")
   (setq dashboard-items '((recents  . 5)
 			  (bookmarks . 5)
