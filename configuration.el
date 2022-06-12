@@ -194,32 +194,32 @@
 
 (use-package company-quickhelp
    :ensure t
-   :init
-   (require 'color)
-   (setq company-tooltip-limit 10
-	 company-tooltip-flip-when-above t
-	 company-tooltip-maximum-width 70
-	 company-tooltip-minimum-width 15
-	 company-quickhelp-color-foreground (color-lighten-name (face-attribute 'default :foreground) 0)
-	 company-quickhelp-color-background (color-darken-name (face-attribute 'default :background) 20)
-	 pos-tip-foreground-color (face-attribute 'default :foreground) ; set pos-tip font color to the same as the theme
-	 company-tooltip-align-annotations t ; align annotations to the right tooltip border
-	 company-quickhelp-delay '1.0
-	 company-quickhelp-use-propertized-text t)
-   (let ((bg (face-attribute 'default :background)))
-     (custom-set-faces
-      `(company-tooltip ((t (:inherit default :background ,(color-darken-name bg 10)))))
-      `(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
-      `(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
-      `(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
-      `(company-tooltip-common ((t (:inherit font-lock-constant-face))))))
    :config
+   (defun load-company-face ()
+     (require 'color)
+     (setq company-tooltip-limit 10
+	   company-tooltip-flip-when-above t
+	   company-tooltip-maximum-width 70
+	   company-tooltip-minimum-width 15
+	   company-quickhelp-color-foreground (color-lighten-name (face-attribute 'default :foreground) 0)
+	   company-quickhelp-color-background (color-darken-name (face-attribute 'default :background) 20)
+	   pos-tip-foreground-color (face-attribute 'default :foreground) ; set pos-tip font color to the same as the theme
+	   company-tooltip-align-annotations t ; align annotations to the right tooltip border
+	   company-quickhelp-delay '1.0
+	   company-quickhelp-use-propertized-text t)
+     (let ((bg (face-attribute 'default :background)))
+       (custom-set-faces
+	`(company-tooltip ((t (:inherit default :background ,(color-darken-name bg 10)))))
+	`(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
+	`(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
+	`(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
+	`(company-tooltip-common ((t (:inherit font-lock-constant-face)))))))
+   (add-hook 'company-mode-hook 'load-company-face)
    (company-quickhelp-mode nil)
    (add-hook 'prog-mode-hook 'linum-relative-mode)
    :hook
    ((emacs-lisp-mode . (lambda () (company-mode)))))
 
- 
 (use-package fsharp-mode
    :ensure t
    :mode (("\\.fs$"  .  fsharp-mode)
@@ -341,7 +341,7 @@
   (dashboard-setup-startup-hook)
   (setq dashboard-center-content t)
   ;; (setq dashboard-set-file-icons t)
-  (setq dashboard-startup-banner "/home/mmagueta/.emacs.d/sources/WarpBlock.png")
+  (setq dashboard-startup-banner "/home/mmagueta/.emacs.d/sources/emacs.svg")
   (setq dashboard-banner-logo-title "Welcome to MageMacs, a magic GNU Emacs customization")
   (setq dashboard-items '((recents  . 5)
 			  (bookmarks . 5)
