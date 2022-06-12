@@ -133,6 +133,17 @@
                     :major-modes '(nix-mode)
                     :server-id 'nix)))
 
+(use-package haskell-mode
+  :ensure t
+  :config
+  (use-package lsp-haskell
+    :ensure t)
+  (use-package haskell-snippets
+    :ensure t)
+  :hook
+  (haskell-mode . (lambda () (lsp)))
+  (haskell-mode . yas-minor-mode))
+
 (use-package tuareg
   :ensure t
   :hook (tuareg-mode . (lambda () (lsp)))

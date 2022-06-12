@@ -9,8 +9,10 @@
 ;; (use-package solarized-theme
 ;;   :ensure t)
 
-;; (use-package exotica-theme
-  ;; :ensure t)
+(use-package exotica-theme
+  :ensure t
+  :config
+  (load-theme 'exotica t))
 
 ;; (use-package jazz-theme
 ;;   :ensure t)
@@ -32,8 +34,6 @@
 (toggle-scroll-bar -1)
 (display-battery-mode t)
 (display-time-mode t)
-
-(load-theme 'pastelmac t)
 
 (custom-set-faces
  '(company-tooltip ((t (:inherit default :background "#000000000000"))))

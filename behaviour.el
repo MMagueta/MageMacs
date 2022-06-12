@@ -11,7 +11,11 @@
 (define-key emacs-lisp-mode-map (kbd "C-c C-e") 'eval-buffer)
 (define-key emacs-lisp-mode-map (kbd "C-c C-c") 'emacs-lisp/eval-entire-expression)
 
-(global-set-key (kbd "s-e") 'multi-term)
+(global-set-key (kbd "s-e") 'eshell)
+(use-package multi-term
+  :ensure t
+  :config
+  (global-set-key (kbd "s-m") 'multi-term))
 (global-set-key (kbd "s-1") 'async-shell-command)
 (global-set-key (kbd "s-t") 'transpose-frame)
 
