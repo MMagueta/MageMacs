@@ -131,7 +131,14 @@
   (lsp-register-client
    (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
                     :major-modes '(nix-mode)
-                    :server-id 'nix)))
+                    :server-id 'nix))
+  (defun nix-repl-with-variable ()
+    (interactive)
+    (let ((variables (read-string "Nix repl variable to load: ")))
+      (defcustom nix-repl-executable-args `("repl" ,variables)
+	"Arguments to provide to nix-repl."
+	:type '(repeat string))
+      (nix-repl))))
 
 (use-package haskell-mode
   :ensure t
