@@ -17,11 +17,9 @@
 ;; (use-package jazz-theme
 ;;   :ensure t)
 
-(use-package powerline
+(use-package doom-modeline
   :ensure t
-  :config
-  (powerline-default-theme)
-  (display-battery-mode -1))
+  :init (doom-modeline-mode 1))
 
 (use-package all-the-icons
   :ensure t)
@@ -32,7 +30,7 @@
 (menu-bar-mode +1)
 (tool-bar-mode -1)
 (toggle-scroll-bar -1)
-(display-battery-mode t)
+(display-battery-mode -1)
 (display-time-mode t)
 
 (custom-set-faces

@@ -89,12 +89,26 @@
   :ensure t
   :hook (scala-mode . (lambda () (lsp))))
 
+(use-package erlang
+  :ensure t
+  :config
+  (use-package company-erlang
+    :ensure t)
+  :hook
+  (erlang-mode . (lambda () (lsp)))
+  (haskell-mode . yas-minor-mode))
+
+(use-package lfe-mode
+  :ensure t)
+
 (use-package rainbow-delimiters
   :ensure t
   :hook
   (clojure-mode . rainbow-delimiters-mode)
   (lisp-mode . rainbow-delimiters-mode)
-  (emacs-lisp-mode . rainbow-delimiters-mode))
+  (emacs-lisp-mode . rainbow-delimiters-mode)
+  (hy-mode . rainbow-delimiters-mode)
+  (lfe-mode . rainbow-delimiters-mode))
 
 ;; (add-hook 'c-or-c++-mode #'(lambda () (lsp)))
 
@@ -125,7 +139,9 @@
 
 (use-package nix-mode
   :ensure t
-  :hook (nix-mode . (lambda () (lsp)))
+  :hook
+  (nix-mode . (lambda () (lsp)))
+  (nix-repl-mode . company-mode)
   :config
   (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
   (lsp-register-client
@@ -168,6 +184,10 @@
 ;;                            (lsp)))
 ;;     :init
 ;;     (setq lsp-python-ms-executable (executable-find "python-language-server"))))
+
+(use-package hy-mode
+  :ensure t
+  :mode (("\\.hy$"  .  hy-mode)))
 
 ;; (use-package swift-mode
 ;;   :ensure t
@@ -359,7 +379,7 @@
   (dashboard-setup-startup-hook)
   (setq dashboard-center-content t)
   ;; (setq dashboard-set-file-icons t)
-  (setq dashboard-startup-banner "/home/mmagueta/.emacs.d/sources/emacs.svg")
+  (setq dashboard-startup-banner "/Users/mmagueta/.emacs.d/sources/emacs.svg")
   (setq dashboard-banner-logo-title "Welcome to MageMacs, a magic GNU Emacs customization")
   (setq dashboard-items '((recents  . 5)
 			  (bookmarks . 5)
