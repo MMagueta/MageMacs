@@ -1,0 +1,17 @@
+
+
+
+* Readings
+** TODO Categorias - Aristotle
+SCHEDULED: <2022-06-25 Sat>
+** TODO Jardim das Aflições
+SCHEDULED: <2022-06-24 Fri>
+- Note taken on [2022-06-24 Fri 01:11] \\
+  Stopped at page 29.
+* Habits
+** TODO Rosary
+   SCHEDULED: <2022-06-25 Sat .+1d>
+   :PROPERTIES:
+   :STYLE: habit
+   :LAST_REPEAT: [2022-06-24 Fri 01:06]
+   :END:

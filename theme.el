@@ -1,7 +1,8 @@
 (require 'use-package)
 
-;; (use-package pastelmac-theme
-;;    :ensure t)
+(use-package pastelmac-theme
+   :ensure t
+   :config (load-theme 'pastelmac t))
 
 ;; (use-package color-theme-sanityinc-tomorrow
 ;;  :ensure t)
@@ -9,10 +10,10 @@
 ;; (use-package solarized-theme
 ;;   :ensure t)
 
-(use-package exotica-theme
-  :ensure t
-  :config
-  (load-theme 'exotica t))
+;; (use-package exotica-theme
+;;   :ensure t
+;;   :config
+;;   (load-theme 'exotica t))
 
 ;; (use-package jazz-theme
 ;;   :ensure t)

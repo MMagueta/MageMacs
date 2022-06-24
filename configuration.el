@@ -206,26 +206,24 @@
   :init
   (global-set-key (kbd "\C-s") 'swiper))
    
-(use-package slime
-  :ensure t
-  :hook
-  (lisp-mode . (lambda () (auto-complete-mode)))
-  (slime-mode . (lambda () (set-up-slime-ac)))
-  (slime-repl-mode . (lambda () (set-up-slime-ac)))
-  (lisp-mode . (lambda () (company-mode)))
-  :config
-  (setq inferior-lisp-program "sbcl")
-  (use-package ac-slime
-    :ensure t
-    :after slime)
-  (use-package auto-complete
-    :ensure t
-    :after slime))
-
-;; (use-package sly
+;; (use-package slime
 ;;   :ensure t
+;;   :hook
+;;   (lisp-mode . (lambda () (auto-complete-mode)))
+;;   (slime-mode . (lambda () (set-up-slime-ac)))
+;;   (slime-repl-mode . (lambda () (set-up-slime-ac)))
+;;   (lisp-mode . (lambda () (company-mode)))
 ;;   :config
-;;   (setq inferior-lisp-program "/nix/store/774bf5ksbhl7pbwxznk1wncw13ymak6k-sbcl-2.2.4/bin/sbcl"))
+;;   (setq inferior-lisp-program "sbcl")
+;;   (use-package ac-slime
+;;     :ensure t
+;;     :after slime)
+;;   (use-package auto-complete
+;;     :ensure t
+;;     :after slime))
+
+(use-package sly
+   :ensure t)
 
 (use-package linum-relative
   :ensure t)
@@ -239,8 +237,8 @@
 	   company-tooltip-flip-when-above t
 	   company-tooltip-maximum-width 70
 	   company-tooltip-minimum-width 15
-	   company-quickhelp-color-foreground (color-lighten-name (face-attribute 'default :foreground) 0)
-	   company-quickhelp-color-background (color-darken-name (face-attribute 'default :background) 20)
+	   company-quickhelp-color-foreground (color-lighten-name (face-attribute 'default :foreground) 10)
+	   company-quickhelp-color-background (color-lighten-name (face-attribute 'default :background) 10)
 	   pos-tip-foreground-color (face-attribute 'default :foreground) ; set pos-tip font color to the same as the theme
 	   company-tooltip-align-annotations t ; align annotations to the right tooltip border
 	   company-quickhelp-delay '1.0
@@ -249,7 +247,7 @@
        (custom-set-faces
 	`(company-tooltip ((t (:inherit default :background ,(color-darken-name bg 10)))))
 	`(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
-	`(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 5)))))
+	`(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 10)))))
 	`(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
 	`(company-tooltip-common ((t (:inherit font-lock-constant-face)))))))
    (add-hook 'company-mode-hook 'load-company-face)
@@ -311,46 +309,33 @@
   (setq org-log-done 'time)
   (setq org-confirm-babel-evaluate nil))
 
-;; org stuff
+(define-key global-map "\C-cl" 'org-store-link)
+(define-key global-map "\C-ca" 'org-agenda)
+
+;; make some org commands available from anywhere (not only org mode)
+(global-set-key (kbd "C-c a") 'org-agenda)
+(global-set-key (kbd "C-c c") 'org-capture)
+
 (use-package org-super-agenda
   :ensure t
-  :after org
+  :init
+  (org-super-agenda-mode)
   :config
-  (org-super-agenda-mode t)
-  (setq org-agenda-custom-commands
-        '(("z" "Super view"
-           ((agenda "" ((org-agenda-span 'day)
-                        (org-super-agenda-groups
-                         '((:name "Today"
-                                  :time-grid t
-                                  :date today
-                                  :todo "TODAY"
-                                  :scheduled today
-                                  :order 1)))))
-            (alltodo "" ((org-agenda-overriding-header "")
-                         (org-super-agenda-groups
-                          '((:name "Important"
-                                   :tag "Important"
-                                   :priority "A"
-                                   :order 2)
-                            (:name "Next to do"
-                                   :todo "NEXT"
-                                   :order 5)
-                            (:name "Personal"
-                                   :tag "@personal"
-                                   :order 10)
-                            (:name "Work"
-                                   :tag "@work"
-                                   :order 15)
-                            (:name "To read"
-                                   :tag "Read"
-                                   :order 30)
-                            (:name "Waiting"
-                                   :todo "WAITING"
-                                   :order 40)
-                            (:name "Due Today"
-                                   :deadline today
-                                   :order 2))))))))))
+  (setq org-agenda-span 21
+	org-agenda-window-setup "only-window"
+	org-agenda-files '("~/.emacs.d/PersonalAgenda.org")
+	org-agenda-custom-commands '(("c" . "My Custom Agendas")
+				     ("cu" "Unscheduled TODO"
+				      ((todo "" ((org-agenda-overriding-header "\nUnscheduled TODO")
+                                                 (org-agenda-skip-function '(org-agenda-skip-entry-if 'timestamp))))) nil nil))
+	org-agenda-prefix-format '((agenda . " %i %?-12t% s")
+				   (todo . " %i %-12:c")
+				   (tags . " %i %-12:c")
+				   (search . " %i %-12:c")))
+  (setq org-super-agenda-groups '((:name "Important" :priority "A")
+				  (:name "Late" :scheduled past :order 1)
+				  (:name "Planned for today" :scheduled today :order 1))))
+
 
 (use-package org-bullets
   :ensure t
@@ -361,7 +346,7 @@
   :ensure t
   :after org
   :config
-  (setq org-plantuml-jar-path (expand-file-name "/nix/store/v0h307n0wjp8hmr4dzyv07j0j7g6cb3v-plantuml-1.2022.3/lib/plantuml.jar"))
+  (setq org-plantuml-jar-path (expand-file-name "/nix/store/*-plantuml-*/lib/plantuml.jar"))
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
 
@@ -379,7 +364,7 @@
   (dashboard-setup-startup-hook)
   (setq dashboard-center-content t)
   ;; (setq dashboard-set-file-icons t)
-  (setq dashboard-startup-banner "/Users/mmagueta/.emacs.d/sources/emacs.svg")
+  ;; (setq dashboard-startup-banner "/Users/mmagueta/.emacs.d/sources/emacs.svg")
   (setq dashboard-banner-logo-title "Welcome to MageMacs, a magic GNU Emacs customization")
   (setq dashboard-items '((recents  . 5)
 			  (bookmarks . 5)
@@ -390,3 +375,5 @@
 (use-package transpose-frame
    :ensure t)
 
+(provide 'configuration)
+;;; configuration.el ends here
