@@ -41,29 +41,24 @@
 
 (use-package lsp-mode
   :ensure t
-  :hook (lsp-mode . lsp-lens-mode)
   :init
   (add-hook 'before-save-hook #'(lambda () (when (eq major-mode 'fsharp-mode)
 					     (lsp-format-buffer))))
+  :hook (lsp-mode . lsp-lens-mode)
   :config
   (use-package lsp-treemacs
     :ensure t))
 
-(use-package dap-mode
-  :ensure t
-  :after lsp-mode
-  :config
-  (setq dap-auto-configure-features '(sessions locals controls tooltip))
-  (dap-mode 1)
-  (dap-ui-mode 1)
-  (dap-tooltip-mode 1)
-  (tooltip-mode 1)
-  (dap-ui-controls-mode 1)
-  (add-hook 'dap-stopped-hook
-            (lambda (arg) (call-interactively #'dap-hydra)))
-  :hook
-  (lsp-mode . dap-mode)
-  (lsp-mode . dap-ui-mode))
+;; (use-package dap-mode
+;;   :commands (dap-debug dap-breakpoints-add)
+;;   :init
+;;   ;; (load-file "~/.emacs.d/sources/dap-netcore.el")
+;;   (dap-mode 1)
+;;   (dap-ui-mode 1)
+;;   (dap-auto-configure-mode)
+;;   (require 'dap-netcore)
+;;   :custom
+;;   (dap-netcore-install-dir "~/.emacs.d/.cache/"))
 
 (use-package lsp-ui
   :ensure t
@@ -139,6 +134,14 @@
 
 (use-package nix-mode
   :ensure t
+  :init
+  (defun nix-repl-with-variable ()
+    (interactive)
+    (let ((variables (read-string "Nix repl variable to load: ")))
+      (defcustom nix-repl-executable-args `("repl" ,variables)
+	"Arguments to provide to nix-repl."
+	:type '(repeat string))
+      (nix-repl)))
   :hook
   (nix-mode . (lambda () (lsp)))
   (nix-repl-mode . company-mode)
@@ -147,14 +150,7 @@
   (lsp-register-client
    (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
                     :major-modes '(nix-mode)
-                    :server-id 'nix))
-  (defun nix-repl-with-variable ()
-    (interactive)
-    (let ((variables (read-string "Nix repl variable to load: ")))
-      (defcustom nix-repl-executable-args `("repl" ,variables)
-	"Arguments to provide to nix-repl."
-	:type '(repeat string))
-      (nix-repl))))
+                    :server-id 'nix)))
 
 (use-package haskell-mode
   :ensure t
@@ -373,7 +369,25 @@
   (setq dashboard-footer-messages '("Quod oculus non vidit, nec auris audivit - I Corinthios II,IX")))
 
 (use-package transpose-frame
-   :ensure t)
+  :ensure t)
+
+(use-package sml-mode
+  :ensure t
+  :config
+  (use-package sml-basis
+    :ensure t)
+  (use-package sml-modeline
+    :ensure t)
+  (use-package ob-sml
+    :ensure t))
+
+(use-package proof-general
+  :ensure t
+  :config
+  (use-package company-coq
+    :ensure t)
+  (use-package coq-commenter
+    :ensure t))
 
 (provide 'configuration)
 ;;; configuration.el ends here

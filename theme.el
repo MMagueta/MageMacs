@@ -5,7 +5,8 @@
    :config (load-theme 'pastelmac t))
 
 ;; (use-package color-theme-sanityinc-tomorrow
-;;  :ensure t)
+  ;; :ensure t
+  ;; :config (load-theme 'sanityinc-tomorrow-blue))
 
 ;; (use-package solarized-theme
 ;;   :ensure t)
@@ -26,7 +27,7 @@
   :ensure t)
 
 (setq-default cursor-type 'box)
-(setq fringe-mode 'left-only)
+(fringe-mode '(7 . 0))
 (scroll-bar-mode -1)
 (menu-bar-mode +1)
 (tool-bar-mode -1)
