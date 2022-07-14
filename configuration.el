@@ -87,7 +87,7 @@
 
 (use-package scala-mode
   :ensure t
-  :hook (scala-mode . (lambda () (lsp))))
+  :hook (scala-mode . lsp-deferred))
 
 (use-package erlang
   :ensure t
@@ -95,7 +95,7 @@
   (use-package company-erlang
     :ensure t)
   :hook
-  (erlang-mode . (lambda () (lsp)))
+  (erlang-mode . lsp-deferred)
   (haskell-mode . yas-minor-mode))
 
 (use-package lfe-mode
@@ -114,7 +114,7 @@
 
 (use-package clojure-mode
   :ensure t
-  :hook (clojure-mode . (lambda () (lsp)))
+  :hook (clojure-mode . lsp-deferred)
   :config
   (setq org-babel-clojure-backend 'cider)
   :init
@@ -140,7 +140,7 @@
 (use-package nix-mode
   :ensure t
   :hook
-  (nix-mode . (lambda () (lsp)))
+  (nix-mode . lsp-deferred)
   (nix-repl-mode . company-mode)
   :config
   (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
@@ -164,12 +164,12 @@
   (use-package haskell-snippets
     :ensure t)
   :hook
-  (haskell-mode . (lambda () (lsp)))
+  (haskell-mode . lsp-deferred)
   (haskell-mode . yas-minor-mode))
 
 (use-package tuareg
   :ensure t
-  :hook (tuareg-mode . (lambda () (lsp)))
+  :hook (tuareg-mode . lsp-deferred)
   :config
   (setq tuareg-match-patterns-aligned t)
   (setq tuareg-indent-align-with-first-arg nil))
@@ -261,7 +261,7 @@
    :mode (("\\.fs$"  .  fsharp-mode)
 	  ("\\.fsx$" .  fsharp-mode)
 	  ("\\.fsi$" .  fsharp-mode))
-   :hook ((fsharp-mode      . (lambda () (lsp))))
+   :hook ((fsharp-mode      . lsp-deferred))
    :bind
    (("C-c C-,"     . 'fsharp-shift-region-left)
     ("C-c C-."     . 'fsharp-shift-region-right)
@@ -275,7 +275,7 @@
    
 (use-package csharp-mode
    :ensure t
-   :hook ((csharp-mode . (lambda () (lsp)))))
+   :hook ((csharp-mode . lsp-deferred)))
 
 (use-package magit
    :ensure t
