@@ -9,7 +9,7 @@
   outputs = inputs@{ nixpkgs, utils, ... }:
     {
       overlay =
-        final: prev: { magemacs = import ./default.nix {pkgs = final;};};
+        final: prev: { magemacs = import ./default.nix { pkgs = final; }; };
     } //
     utils.lib.eachDefaultSystem (system:
       let pkgs = import nixpkgs { inherit system; };
@@ -18,7 +18,7 @@
 
         apps.default = utils.lib.mkApp { drv = packages.default; exePath = "/bin/emacs"; };
 
-        packages.default = import ./default.nix { inherit pkgs;};
+        packages.default = import ./default.nix { inherit pkgs; };
 
       });
 }
