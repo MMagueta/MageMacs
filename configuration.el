@@ -1,5 +1,3 @@
-(use-package request
-  :ensure t)
 
 (use-package ansi-color
   :ensure t
