@@ -8,7 +8,7 @@
 
   outputs = inputs@{ nixpkgs, utils, ... }:
     {
-      overlay.default =
+      overlay =
         final: prev: { magemacs = import ./default.nix {pkgs = final;};};
     } //
     utils.lib.eachDefaultSystem (system:
