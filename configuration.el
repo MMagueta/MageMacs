@@ -337,7 +337,7 @@
   (dashboard-setup-startup-hook)
   (setq dashboard-center-content t)
   ;; (setq dashboard-set-file-icons t)
-  ;; (setq dashboard-startup-banner "/Users/mmagueta/.emacs.d/sources/emacs.svg")
+  (setq dashboard-startup-banner "sources/emacs.svg")
   (setq dashboard-banner-logo-title "Welcome to MageMacs, a magic GNU Emacs customization")
   (setq dashboard-items '((recents  . 5)
 			  (bookmarks . 5)
