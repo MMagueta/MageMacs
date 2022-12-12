@@ -1,6 +1,3 @@
-(use-package request
-  :ensure t)
-
 (use-package ansi-color
   :ensure t
   :config
@@ -27,8 +24,8 @@
   (use-package flycheck-elsa
     :ensure t
     :hook
-    ((emacs-lisp-mode . (lambda () (flycheck-mode)))
-     (emacs-lisp-mode . (lambda () (flymake-mode))))))
+    ((emacs-lisp-mode . flycheck-mode)
+     (emacs-lisp-mode . flymake-mode))))
 
 (use-package flycheck
   :ensure t
@@ -36,19 +33,19 @@
   (use-package flymake-flycheck
     :ensure t))
 
-(use-package diff-hl
-  :ensure t)
-
 (use-package lsp-mode
   :ensure t
-  :init
-  (add-hook 'before-save-hook #'(lambda () (when (eq major-mode 'fsharp-mode)
-					     (lsp-format-buffer))))
-  :hook (lsp-mode . lsp-lens-mode)
+  :hook ((lsp-mode . lsp-lens-mode)
+	 (before-save . (lambda () (progn
+				     ;; (interactive)
+				     (when (eq major-mode 'fsharp-mode)
+				       (lsp-format-buffer))))))
+	 ;; (let ((format-option (read-string "Format buffer? (y/n) ")))
+	 ;; (when (string= format-option "y")
+	 ;; (lsp-format-buffer))))))))
   :config
-  ;;(use-package lsp-treemacs
-;;  :ensure t)
-)
+  (use-package lsp-treemacs
+    :ensure t))
 
 ;; (use-package dap-mode
 ;;   :commands (dap-debug dap-breakpoints-add)
@@ -83,43 +80,28 @@
 
 (use-package scala-mode
   :ensure t
-  :hook (scala-mode . lsp-deferred))
-
-(use-package erlang
-  :ensure t
-  :config
-  (use-package company-erlang
-    :ensure t)
   :hook
-  (erlang-mode . lsp-deferred)
-  (haskell-mode . yas-minor-mode))
-
-(use-package lfe-mode
-  :ensure t)
+  (scala-mode . lsp-deferred)
+  (scala-mode . yas-minor-mode))
 
 (use-package rainbow-delimiters
   :ensure t
   :hook
   (clojure-mode . rainbow-delimiters-mode)
   (lisp-mode . rainbow-delimiters-mode)
-  (emacs-lisp-mode . rainbow-delimiters-mode)
-  (hy-mode . rainbow-delimiters-mode)
-  (lfe-mode . rainbow-delimiters-mode))
+  (emacs-lisp-mode . rainbow-delimiters-mode))
 
 ;; (add-hook 'c-or-c++-mode #'(lambda () (lsp)))
 
 (use-package clojure-mode
   :ensure t
-  :hook (clojure-mode . lsp-deferred)
-  :config
-  (setq org-babel-clojure-backend 'cider)
+  :hook ((clojure-mode . lsp-deferred))
+  :custom
+  (org-babel-clojure-backend 'cider)
   :init
   (use-package cider
-    :ensure t))
-
-;; (use-package purescript-mode
-;;   :ensure t
-;;   :hook (purescript-mode . (lambda () (lsp))))
+    :ensure t
+    :hook ((cider-repl-mode . corfu-mode))))
 
 (use-package sbt-mode
   :commands sbt-start sbt-command
@@ -131,7 +113,7 @@
    'self-insert-command
    minibuffer-local-completion-map)
   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
-  (setq sbt:program-options '("-Dsbt.supershell=false")))
+  :custom (sbt:program-options '("-Dsbt.supershell=false")))
 
 (use-package nix-mode
   :ensure t
@@ -145,7 +127,7 @@
       (nix-repl)))
   :hook
   (nix-mode . lsp-deferred)
-  (nix-repl-mode . company-mode)
+  ;; (nix-repl-mode . company-mode)
   :config
   (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
   (lsp-register-client
@@ -171,37 +153,10 @@
   (setq tuareg-match-patterns-aligned t)
   (setq tuareg-indent-align-with-first-arg nil))
 
-;; (use-package python-mode
-;;   :ensure t
-;;   :config
-;;   (use-package lsp-python-ms
-;;     :ensure t
-;;     :hook (python-mode . (lambda ()
-;;                            (require 'lsp-python-ms)
-;;                            (lsp)))
-;;     :init
-;;     (setq lsp-python-ms-executable (executable-find "python-language-server"))))
-
-(use-package hy-mode
-  :ensure t
-  :mode (("\\.hy$"  .  hy-mode)))
-
-;; (use-package swift-mode
-;;   :ensure t
-;;   :hook (swift-mode . (lambda () (lsp)))
-;;   :after lsp-mode
-;;   :config  
-;;   (setq lsp-sourcekit-executable (string-trim (shell-command-to-string "xcrun --find sourcekit-lsp"))))
-
-;; (use-package racket-mode
-;;   :ensure t
-;;   :hook (racket-mode . (lambda () (lsp)))
-;;   :after lsp-mode)
-
 (use-package swiper
   :ensure t
-  :init
-  (global-set-key (kbd "\C-s") 'swiper))
+  :bind
+  ("\C-s" . swiper))
    
 ;; (use-package slime
 ;;   :ensure t
@@ -220,10 +175,18 @@
 ;;     :after slime))
 
 (use-package sly
-   :ensure t)
+  :ensure t
+  :hook ((sly-mode . corfu-mode)))
 
-(use-package linum-relative
-  :ensure t)
+;; (use-package linum-relative
+;;   :ensure t
+;;   :hook ((prog-mode . linum-relative-mode)))
+
+(use-package display-line-numbers
+  :ensure t
+  :hook ((prog-mode . (lambda () (progn
+				   (display-line-numbers-mode)
+				   (setq display-line-numbers 'relative))))))
 
 (use-package company-quickhelp
    :ensure t
@@ -238,27 +201,52 @@
 	   company-quickhelp-color-background (color-lighten-name (face-attribute 'default :background) 10)
 	   pos-tip-foreground-color (face-attribute 'default :foreground) ; set pos-tip font color to the same as the theme
 	   company-tooltip-align-annotations t ; align annotations to the right tooltip border
-	   company-quickhelp-delay '1.0
+	   company-quickhelp-delay '0.25
 	   company-quickhelp-use-propertized-text t)
      (let ((bg (face-attribute 'default :background)))
        (custom-set-faces
 	`(company-tooltip ((t (:inherit default :background ,(color-darken-name bg 10)))))
 	`(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
 	`(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 10)))))
-	`(company-tooltip-selection ((t (:inherit font-lock-function-name-face))))
+	`(company-tooltip-selection ((t (:inherit highlight;font-lock-function-name-face
+						  ))))
 	`(company-tooltip-common ((t (:inherit font-lock-constant-face)))))))
-   (add-hook 'company-mode-hook 'load-company-face)
-   (company-quickhelp-mode nil)
-   (add-hook 'prog-mode-hook 'linum-relative-mode)
-   :hook
-   ((emacs-lisp-mode . (lambda () (company-mode)))))
+   (add-hook 'company-mode-hook 'load-company-face))
+   ;; :init (company-quickhelp-mode t)
+   ;; :hook
+   ;; ((emacs-lisp-mode . (lambda () (company-mode)))
+    ;; (company-mode . load-company-face)))
+
+(use-package corfu
+  :ensure t
+  :custom ((corfu-auto t)
+	   (corfu-auto-delay 0.25)
+	   (corfu-min-width 15)
+	   (corfu-max-width 70)
+	   (corfu-popupinfo-delay corfu-auto-delay))
+  :hook ((prog-mode . corfu-mode)
+	 (corfu-mode . corfu-popupinfo-mode)
+	 (eshell-mode . corfu-mode)
+	 (lsp-mode . (lambda () (progn
+				  (company-mode -1)
+				  (corfu-mode))))))
+
+;; (use-package marginalia
+;;   :ensure t
+;;   :bind
+;;   (("M-A" . marginalia-cycle)
+;;    :map minibuffer-local-map
+;;    ("M-A" . marginalia-cycle)))
+
+(use-package fstar-mode
+  :ensure t)
 
 (use-package fsharp-mode
    :ensure t
    :mode (("\\.fs$"  .  fsharp-mode)
 	  ("\\.fsx$" .  fsharp-mode)
 	  ("\\.fsi$" .  fsharp-mode))
-   :hook ((fsharp-mode      . lsp-deferred))
+   :hook ((fsharp-mode . lsp-deferred))
    :bind
    (("C-c C-,"     . 'fsharp-shift-region-left)
     ("C-c C-."     . 'fsharp-shift-region-right)
@@ -276,42 +264,40 @@
 
 (use-package magit
    :ensure t
-   :init
-   (global-set-key (kbd "C-x g") 'magit-status))
+   :bind
+   ("C-x g" . magit-status)
+   :config
+   (use-package diff-hl
+     :ensure t))
 
 (use-package helm
    :ensure t
    :init
-   (helm-mode 1)
-   :config
-   (global-set-key (kbd "M-x") 'helm-M-x)
-   (global-set-key (kbd "C-x b") 'helm-buffers-list))
+   (helm-mode t)
+   :bind
+   ("M-x" . helm-M-x)
+   ("C-x b" . helm-buffers-list))
    
 (use-package multiple-cursors
    :ensure t
-   :config
-   (global-set-key (kbd "C-d") 'mc/mark-next-like-this-word)
-   (global-set-key (kbd "C-c m c") 'mc/edit-lines))
+   :bind-keymap
+   ("C-d" . mc/mark-next-like-this-word)
+   ("C-c m c" . mc/edit-lines))
 
 (use-package eshell-syntax-highlighting
   :ensure t
   :config
-  (eshell-syntax-highlighting-global-mode +1))
+  (eshell-syntax-highlighting-global-mode t))
 
 (use-package org
   :ensure t
   :config
-  (define-key global-map "\C-cl" 'org-store-link)
-  ;; (define-key global-map "\C-ca" 'org-agenda)
   (setq org-log-done 'time)
-  (setq org-confirm-babel-evaluate nil))
-
-(define-key global-map "\C-cl" 'org-store-link)
-(define-key global-map "\C-ca" 'org-agenda)
-
-;; make some org commands available from anywhere (not only org mode)
-(global-set-key (kbd "C-c a") 'org-agenda)
-(global-set-key (kbd "C-c c") 'org-capture)
+  (setq org-confirm-babel-evaluate nil)
+  (define-key global-map "\C-cl" 'org-store-link)
+  (define-key global-map "\C-ca" 'org-agenda)
+  ;; make some org commands available from anywhere (not only org mode)
+  (global-set-key (kbd "C-c c") 'org-capture))
 
 (use-package org-super-agenda
   :ensure t
@@ -343,17 +329,19 @@
   :ensure t
   :after org
   :config
-  (setq org-plantuml-jar-path (expand-file-name "/nix/store/*-plantuml-*/lib/plantuml.jar"))
+  (setq org-plantuml-jar-path (expand-file-name "~/.emacs.d/plantuml-1.2022.13.jar"))
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
 
 (use-package projectile
   :ensure t
-  :config
-  (projectile-mode +1)
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+  :init
+  (projectile-mode t)
+  :bind-keymap
+  ("C-c p" . projectile-command-map))
 
 (use-package dashboard
+  :after projectile
   :ensure t
   :after all-the-icons
   ;; :diminish dashboard-mode
@@ -400,7 +388,17 @@
 (use-package perspective
   :ensure t
   :bind (("C-x k" . persp-kill-buffer*))
-  :init (persp-mode))
+  :init
+  (persp-mode)
+  (setq persp-suppress-no-prefix-key-warning t))
+
+(use-package org-sql
+  :ensure t
+  :config
+  (use-package ob-sql-mode
+    :ensure t)
+  (org-babel-do-load-languages 'org-babel-load-languages
+			       '((sql . t))))
 
 (provide 'configuration)
 ;;; configuration.el ends here
