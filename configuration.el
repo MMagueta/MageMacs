@@ -188,30 +188,30 @@
 				   (display-line-numbers-mode)
 				   (setq display-line-numbers 'relative))))))
 
-(use-package company-quickhelp
-   :ensure t
-   :config
-   (defun load-company-face ()
-     (require 'color)
-     (setq company-tooltip-limit 10
-	   company-tooltip-flip-when-above t
-	   company-tooltip-maximum-width 70
-	   company-tooltip-minimum-width 15
-	   company-quickhelp-color-foreground (color-lighten-name (face-attribute 'default :foreground) 10)
-	   company-quickhelp-color-background (color-lighten-name (face-attribute 'default :background) 10)
-	   pos-tip-foreground-color (face-attribute 'default :foreground) ; set pos-tip font color to the same as the theme
-	   company-tooltip-align-annotations t ; align annotations to the right tooltip border
-	   company-quickhelp-delay '0.25
-	   company-quickhelp-use-propertized-text t)
-     (let ((bg (face-attribute 'default :background)))
-       (custom-set-faces
-	`(company-tooltip ((t (:inherit default :background ,(color-darken-name bg 10)))))
-	`(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
-	`(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 10)))))
-	`(company-tooltip-selection ((t (:inherit highlight;font-lock-function-name-face
-						  ))))
-	`(company-tooltip-common ((t (:inherit font-lock-constant-face)))))))
-   (add-hook 'company-mode-hook 'load-company-face))
+;; (use-package company-quickhelp
+;;    :ensure t
+;;    :config
+;;    (defun load-company-face ()
+;;      (require 'color)
+;;      (setq company-tooltip-limit 10
+;; 	   company-tooltip-flip-when-above t
+;; 	   company-tooltip-maximum-width 70
+;; 	   company-tooltip-minimum-width 15
+;; 	   company-quickhelp-color-foreground (color-lighten-name (face-attribute 'default :foreground) 10)
+;; 	   company-quickhelp-color-background (color-lighten-name (face-attribute 'default :background) 10)
+;; 	   pos-tip-foreground-color (face-attribute 'default :foreground) ; set pos-tip font color to the same as the theme
+;; 	   company-tooltip-align-annotations t ; align annotations to the right tooltip border
+;; 	   company-quickhelp-delay '0.25
+;; 	   company-quickhelp-use-propertized-text t)
+;;      (let ((bg (face-attribute 'default :background)))
+;;        (custom-set-faces
+;; 	`(company-tooltip ((t (:inherit default :background ,(color-darken-name bg 10)))))
+;; 	`(company-scrollbar-bg ((t (:background ,(color-lighten-name bg 10)))))
+;; 	`(company-scrollbar-fg ((t (:background ,(color-lighten-name bg 10)))))
+;; 	`(company-tooltip-selection ((t (:inherit highlight;font-lock-function-name-face
+;; 						  ))))
+;; 	`(company-tooltip-common ((t (:inherit font-lock-constant-face)))))))
+;;    (add-hook 'company-mode-hook 'load-company-face))
    ;; :init (company-quickhelp-mode t)
    ;; :hook
    ;; ((emacs-lisp-mode . (lambda () (company-mode)))
@@ -228,7 +228,7 @@
 	 (corfu-mode . corfu-popupinfo-mode)
 	 (eshell-mode . corfu-mode)
 	 (lsp-mode . (lambda () (progn
-				  (company-mode -1)
+				  (company-mode nil)
 				  (corfu-mode))))))
 
 ;; (use-package marginalia
@@ -280,7 +280,7 @@
    
 (use-package multiple-cursors
    :ensure t
-   :bind-keymap
+   :bind
    ("C-d" . mc/mark-next-like-this-word)
    ("C-c m c" . mc/edit-lines))
 
@@ -291,9 +291,10 @@
 
 (use-package org
   :ensure t
+  :custom
+  (org-log-done 'time)
+  (org-confirm-babel-evaluate nil)
   :config
-  (setq org-log-done 'time)
-  (setq org-confirm-babel-evaluate nil)
   (define-key global-map "\C-cl" 'org-store-link)
   (define-key global-map "\C-ca" 'org-agenda)
   ;; make some org commands available from anywhere (not only org mode)
@@ -328,8 +329,9 @@
 (use-package plantuml-mode
   :ensure t
   :after org
+  :custom
+  (org-plantuml-jar-path (expand-file-name "~/.emacs.d/plantuml.jar"))
   :config
-  (setq org-plantuml-jar-path (expand-file-name "~/.emacs.d/plantuml-1.2022.13.jar"))
   (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
   (org-babel-do-load-languages 'org-babel-load-languages '((plantuml . t))))
 
