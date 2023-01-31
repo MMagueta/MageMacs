@@ -36,10 +36,11 @@
 (use-package lsp-mode
   :ensure t
   :hook ((lsp-mode . lsp-lens-mode)
-	 (before-save . (lambda () (progn
-				     ;; (interactive)
-				     (when (eq major-mode 'fsharp-mode)
-				       (lsp-format-buffer))))))
+	 ;; (before-save . (lambda () (progn
+				     (interactive)
+				     ;; (when (eq major-mode 'fsharp-mode)
+				       ;; (lsp-format-buffer)))))
+	 )
 	 ;; (let ((format-option (read-string "Format buffer? (y/n) ")))
 	 ;; (when (string= format-option "y")
 	 ;; (lsp-format-buffer))))))))
@@ -238,8 +239,8 @@
 ;;    :map minibuffer-local-map
 ;;    ("M-A" . marginalia-cycle)))
 
-(use-package fstar-mode
-  :ensure t)
+;; (use-package fstar-mode
+;;   :ensure t)
 
 (use-package fsharp-mode
    :ensure t
@@ -277,12 +278,28 @@
    :bind
    ("M-x" . helm-M-x)
    ("C-x b" . helm-buffers-list))
-   
+
+(use-package windmove
+  :ensure t
+  :bind
+  ("C-e <right>" . windmove-right)
+  ("C-e <left>" . windmove-left)
+  ("C-e <up>" . windmove-up)
+  ("C-e <down>" . windmove-down))
+
 (use-package multiple-cursors
-   :ensure t
-   :bind
-   ("C-d" . mc/mark-next-like-this-word)
-   ("C-c m c" . mc/edit-lines))
+  :ensure t
+  :bind
+  ("C-d" . mc/mark-next-like-this-word)
+  ("C-c m c" . mc/edit-lines)
+  ("C-<" . mc/mark-previous-like-this)
+  ("C->" . mc/mark-next-like-this))
+
+(use-package move-text
+  :ensure t
+  :bind
+  ("M-<up>" . move-text-up)
+  ("M-<down>" . move-text-down))
 
 (use-package eshell-syntax-highlighting
   :ensure t

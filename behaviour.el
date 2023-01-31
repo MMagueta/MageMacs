@@ -1,7 +1,7 @@
 (require 'use-package)
 
 (setq create-lockfiles nil)
-(setq make-backup-files nil)
+(setq backup-directory-alist `(("." . "~/.saves")))
 
 (defun emacs-lisp/eval-entire-expression ()
   (interactive)
