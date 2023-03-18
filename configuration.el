@@ -419,5 +419,19 @@
   (org-babel-do-load-languages 'org-babel-load-languages
 			       '((sql . t))))
 
+(use-package typescript-mode
+  :ensure t
+  :hook ((typescript-mode . lsp-mode)))
+
+(use-package lsp-mssql
+  :ensure t
+  :custom (lsp-mssql-connections
+	   [(:server "localhost"
+		     :port 1433
+                     :database "msdb"
+                     :user "sa"
+                     :password "P@ssw0rd")])
+  :bind (("C-c r" . lsp-mssql-execute-region)))
+
 (provide 'configuration)
 ;;; configuration.el ends here
