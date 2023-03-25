@@ -275,6 +275,9 @@
    :ensure t
    :init
    (helm-mode t)
+   (set-face-attribute 'helm-selection nil 
+                       :background "purple"
+                       :foreground "black")
    :bind
    ("M-x" . helm-M-x)
    ("C-x b" . helm-buffers-list))
@@ -282,10 +285,10 @@
 (use-package windmove
   :ensure t
   :bind
-  ("C-e <right>" . windmove-right)
-  ("C-e <left>" . windmove-left)
-  ("C-e <up>" . windmove-up)
-  ("C-e <down>" . windmove-down))
+  ("C-c <right>" . windmove-right)
+  ("C-c <left>" . windmove-left)
+  ("C-c <up>" . windmove-up)
+  ("C-c <down>" . windmove-down))
 
 (use-package multiple-cursors
   :ensure t
@@ -409,7 +412,7 @@
   :bind (("C-x k" . persp-kill-buffer*))
   :init
   (persp-mode)
-  (setq persp-suppress-no-prefix-key-warning t))
+  :custom (persp-suppress-no-prefix-key-warning t))
 
 (use-package org-sql
   :ensure t
