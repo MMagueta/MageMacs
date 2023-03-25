@@ -275,9 +275,9 @@
    :ensure t
    :init
    (helm-mode t)
-   (set-face-attribute 'helm-selection nil 
-                       :background "purple"
-                       :foreground "black")
+   (set-face-attribute 'helm-selection nil
+		       :background (color-lighten-name (face-attribute 'default :foreground) 50)
+		       :foreground (color-darken-name (face-attribute 'default :background) 100))
    :bind
    ("M-x" . helm-M-x)
    ("C-x b" . helm-buffers-list))

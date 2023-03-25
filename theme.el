@@ -1,8 +1,10 @@
 (require 'use-package)
 
-(require 'catppuccin-theme)
-(setq catppuccin-flavor 'latte)
-(load-theme 'catppuccin t)
+;; (require 'catppuccin-theme)
+(use-package catppuccin-theme
+  :ensure t
+  :custom catppuccin-flavor 'latte
+  :config (load-theme 'catppuccin t))
 ;; (catppuccin-reload)
 
 ;; (use-package pastelmac-theme
@@ -50,6 +52,6 @@
  '(rainbow-delimiters-depth-5-face ((t (:foreground "Purple"))))
  '(rainbow-delimiters-depth-6-face ((t (:foreground "dark green"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "indian red"))))
- '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :extend nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "nil" :family "Cascadia Mono")))))
+ '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :extend nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "nil" :family "Cascadia Mono")))))
 
 (provide 'theme)
