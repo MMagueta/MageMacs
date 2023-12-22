@@ -3,7 +3,7 @@
 ;; (require 'catppuccin-theme)
 (use-package catppuccin-theme
   :ensure t
-  :custom catppuccin-flavor 'latte
+  :custom catppuccin-flavor 'mocha
   :config (load-theme 'catppuccin t))
 ;; (catppuccin-reload)
 
@@ -38,7 +38,7 @@
 (setq-default cursor-type 'box)
 (fringe-mode '(7 . 0))
 (scroll-bar-mode -1)
-(menu-bar-mode t)
+(menu-bar-mode -1)
 (tool-bar-mode -1)
 (toggle-scroll-bar -1)
 (display-battery-mode -1)
@@ -52,6 +52,7 @@
  '(rainbow-delimiters-depth-5-face ((t (:foreground "Purple"))))
  '(rainbow-delimiters-depth-6-face ((t (:foreground "dark green"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "indian red"))))
- '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :extend nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "nil" :family "Cascadia Mono")))))
+ ;; '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :extend nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "nil" :family "Cascadia Mono"))))
+ )
 
 (provide 'theme)

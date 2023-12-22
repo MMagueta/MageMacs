@@ -16,16 +16,11 @@
     :ensure t)
   (yas-reload-all))
 
-(use-package elsa
+(use-package flycheck-elsa
   :ensure t
   :hook
-  (emacs-lisp-mode . (lambda () (flycheck-elsa-setup)))
-  :config
-  (use-package flycheck-elsa
-    :ensure t
-    :hook
-    ((emacs-lisp-mode . flycheck-mode)
-     (emacs-lisp-mode . flymake-mode))))
+  ((emacs-lisp-mode . flycheck-mode)
+   (emacs-lisp-mode . flymake-mode)))
 
 (use-package flycheck
   :ensure t
@@ -36,14 +31,10 @@
 (use-package lsp-mode
   :ensure t
   :hook ((lsp-mode . lsp-lens-mode)
-	 ;; (before-save . (lambda () (progn
-				     (interactive)
-				     ;; (when (eq major-mode 'fsharp-mode)
-				       ;; (lsp-format-buffer)))))
-	 )
-	 ;; (let ((format-option (read-string "Format buffer? (y/n) ")))
-	 ;; (when (string= format-option "y")
-	 ;; (lsp-format-buffer))))))))
+	 ;; Solves F# buffer out of sync
+	 (lsp-mode . (lambda () (progn
+				  (ws-butler-mode -1)
+				  (lsp-treemacs-sync-mode -1)))))
   :config
   (use-package lsp-treemacs
     :ensure t))
