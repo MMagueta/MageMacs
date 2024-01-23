@@ -1,39 +1,39 @@
 (require 'use-package)
 
-;; (require 'catppuccin-theme)
-(use-package catppuccin-theme
-  :ensure t
-  :custom catppuccin-flavor 'mocha
-  :config (load-theme 'catppuccin t))
-;; (catppuccin-reload)
+;; ;; (require 'catppuccin-theme)
+;; (use-package catppuccin-theme
+;;   :straight t
+;;   :custom catppuccin-flavor 'mocha
+;;   :config (load-theme 'catppuccin t))
+;; ;; (catppuccin-reload)
 
 ;; (use-package pastelmac-theme
-;;    :ensure t
+;;    :straight t
 ;;    :config (load-theme 'pastelmac t))
 
 ;; (use-package color-theme-sanityinc-tomorrow
-  ;; :ensure t
+  ;; :straight t
   ;; :config (load-theme 'sanityinc-tomorrow-blue))
 
 ;; (use-package solarized-theme
-;;   :ensure t)
+;;   :straight t)
 
 ;; (use-package exotica-theme
-;;   :ensure t
+;;   :straight t
 ;;   :config
 ;;   (load-theme 'exotica t))
 
 ;; (use-package jazz-theme
-;;   :ensure t)
+;;   :straight t)
 
-;; (load-theme 'adwaita t)
+(load-theme 'adwaita t)
 
 (use-package doom-modeline
-  :ensure t
+  :straight t
   :init (doom-modeline-mode t))
 
 (use-package all-the-icons
-  :ensure t)
+  :straight t)
 
 (setq-default cursor-type 'box)
 (fringe-mode '(7 . 0))
@@ -53,7 +53,6 @@
  '(rainbow-delimiters-depth-5-face ((t (:foreground "Purple"))))
  '(rainbow-delimiters-depth-6-face ((t (:foreground "dark green"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "indian red"))))
- ;; '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :extend nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "nil" :family "Cascadia Mono"))))
- )
+ '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :extend nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "nil" :family "Cascadia Mono")))))
 
 (provide 'theme)

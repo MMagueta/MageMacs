@@ -10,15 +10,8 @@
 
 (define-key emacs-lisp-mode-map (kbd "C-c C-e") 'eval-buffer)
 (define-key emacs-lisp-mode-map (kbd "C-c C-c") 'emacs-lisp/eval-entire-expression)
-
 (global-set-key (kbd "s-e") 'eshell)
-(use-package multi-term
-  :ensure t
-  :config
-  (global-set-key (kbd "s-m") 'multi-term))
-(global-set-key (kbd "s-1") 'async-shell-command)
 (global-set-key (kbd "s-t") 'transpose-frame)
-
 
 (use-package comint
   :after fsharp-mode
@@ -29,7 +22,6 @@
       (when (buffer-live-p buf)
 	(with-current-buffer buf
 	  (insert (format "\nProcess %s %s" process event))))))
-  
   (defun turn-on-comint-history ()
     (let ((process (get-buffer-process (current-buffer))))
       (when process
@@ -38,17 +30,14 @@
 		      (process-name process)))
 	(comint-read-input-ring)
 	(set-process-sentinel process
-			      #'comint-write-history-on-exit))))
-  
+			      #'comint-write-history-on-exit))))  
   (defun mapc-buffers (fn)
     (mapc (lambda (buffer)
 	    (with-current-buffer buffer
 	      (funcall fn)))
 	  (buffer-list)))
- 
   (defun comint-write-input-ring-all-buffers ()
-    (mapc-buffers 'comint-write-input-ring))
-  
+    (mapc-buffers 'comint-write-input-ring))  
   (add-hook 'kill-emacs-hook 'comint-write-input-ring-all-buffers)
   (add-hook 'kill-buffer-hook 'comint-write-input-ring)
   :hook
