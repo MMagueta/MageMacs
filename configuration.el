@@ -159,5 +159,13 @@
 (use-package transpose-frame
   :straight t)
 
+(use-package copilot
+  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("dist" "*.el"))
+  :hook (prog-mode . copilot-mode)
+  :bind (:map copilot-mode-map
+	      ("C-q <tab>" . copilot-accept-completion)
+	      ("C-q <right>" . copilot-next-completion)
+	      ("C-q <left>" . copilot-previous-completion)))
+
 (provide 'configuration)
 ;;; configuration.el ends here
