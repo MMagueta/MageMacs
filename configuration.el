@@ -4,6 +4,12 @@
 	 ;; Solves F# buffer out of sync
 	 (lsp-mode . (lambda () (lsp-treemacs-sync-mode -1)))))
 
+(use-package dap-mode
+  :straight t
+  :after lsp-mode)
+
+(require 'dap-netcore)
+
 (use-package lsp-ui
   :straight t
   :init
@@ -166,6 +172,10 @@
 	      ("C-q <tab>" . copilot-accept-completion)
 	      ("C-q <right>" . copilot-next-completion)
 	      ("C-q <left>" . copilot-previous-completion)))
+
+(use-package erlang
+  :straight t
+  :hook (erlang-mode . lsp-deferred))
 
 (provide 'configuration)
 ;;; configuration.el ends here

@@ -6,3 +6,7 @@ recentf
 snippets
 transient
 projectile*
+straight/
+eshell/
+.lsp-session*
+.dap*
