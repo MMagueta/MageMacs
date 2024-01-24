@@ -1,11 +1,9 @@
 (require 'use-package)
 
-;; ;; (require 'catppuccin-theme)
-;; (use-package catppuccin-theme
-;;   :straight t
-;;   :custom catppuccin-flavor 'mocha
-;;   :config (load-theme 'catppuccin t))
-;; ;; (catppuccin-reload)
+(use-package catppuccin-theme
+  :straight t
+  :custom catppuccin-flavor 'latte
+  :config (load-theme 'catppuccin t))
 
 ;; (use-package pastelmac-theme
 ;;    :straight t
@@ -26,7 +24,7 @@
 ;; (use-package jazz-theme
 ;;   :straight t)
 
-(load-theme 'adwaita t)
+;; (load-theme 'adwaita t)
 
 (use-package doom-modeline
   :straight t

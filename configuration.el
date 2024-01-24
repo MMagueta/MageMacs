@@ -1,8 +1,13 @@
+(use-package flycheck
+  :straight t
+  :custom (flycheck-check-syntax-automatically '(save mode-enable)))
+
 (use-package lsp-mode
   :straight t
   :hook ((lsp-mode . lsp-lens-mode)
 	 ;; Solves F# buffer out of sync
-	 (lsp-mode . (lambda () (lsp-treemacs-sync-mode -1)))))
+	 (lsp-mode . (lambda () (lsp-treemacs-sync-mode -1)))
+	 (lsp-mode . (flymake-mode-off))))
 
 (use-package dap-mode
   :straight t
