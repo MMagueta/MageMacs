@@ -114,8 +114,8 @@
     ("C-c C-a"     . 'fsharp-find-alternate-file)
     ("M-h"         . 'fsharp-mark-phrase))
    :config
-   (setq compile-command "dotnet watch run")
-   (setq inferior-fsharp-program "dotnet fsi"))
+   (setq compile-command "dotnet build")
+   (setq inferior-fsharp-program "dotnet fsi --readline-"))
 
 (use-package magit
    :straight t
@@ -181,6 +181,9 @@
 (use-package erlang
   :straight t
   :hook (erlang-mode . lsp-deferred))
+
+(use-package org-drill
+  :straight t)
 
 (provide 'configuration)
 ;;; configuration.el ends here
