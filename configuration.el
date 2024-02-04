@@ -32,11 +32,6 @@
   :bind
   (("s-?" . 'magueta/lsp-ui-doc-toggle)))
 
-(use-package rainbow-delimiters
-  :straight t
-  :hook
-  (emacs-lisp-mode . rainbow-delimiters-mode))
-
 (use-package nix-mode
   :straight t
   :init
@@ -184,6 +179,32 @@
 
 (use-package org-drill
   :straight t)
+
+(use-package sly
+  :straight t
+  :hook ((sly-mode . corfu-mode)))
+
+(use-package rainbow-delimiters
+  :straight t
+  :hook
+  (lisp-mode . rainbow-delimiters-mode)
+  (emacs-lisp-mode . rainbow-delimiters-mode))
+
+(use-package smartparens
+  :straight t
+  :hook ((lisp-mode . smartparens-mode)
+	 (emacs-lisp-mode . smartparens-mode))
+  :bind (:map smartparens-mode-map
+	      ("C-M-<right>" . 'sp-forward-sexp)
+	      ("C-M-<left>" . 'sp-backward-sexp)
+	      ("C-M-<down>" . 'sp-down-sexp)
+	      ("C-M-<up>" . 'sp-up-sexp)
+	      ("C-k" . 'sp-kill-sexp)
+	      ("M-w" . 'sp-copy-sexp)
+	      ("C-M-s" . 'sp-forward-slurp-sexp)
+	      ("C-S-s" . 'sp-backward-slurp-sexp)
+	      ("C-M-b" . 'sp-forward-barf-sexp)
+	      ("C-S-b" . 'sp-backward-barf-sexp)))
 
 (provide 'configuration)
 ;;; configuration.el ends here
