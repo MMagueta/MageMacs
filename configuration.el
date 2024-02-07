@@ -167,7 +167,6 @@
 
 (use-package copilot
   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("dist" "*.el"))
-  :hook (prog-mode . copilot-mode)
   :bind (:map copilot-mode-map
 	      ("C-q <tab>" . copilot-accept-completion)
 	      ("C-q <right>" . copilot-next-completion)
@@ -183,6 +182,13 @@
 (use-package sly
   :straight t
   :hook ((sly-mode . corfu-mode)))
+
+(use-package cider
+  :straight t)
+
+(use-package clojure-mode
+  :straight t
+  :hook (clojure-mode . lsp-deferred))
 
 (use-package rainbow-delimiters
   :straight t
