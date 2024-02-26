@@ -2,7 +2,7 @@
 
 (use-package catppuccin-theme
   :straight t
-  :custom catppuccin-flavor 'latte
+  :custom catppuccin-flavor 'mocha
   :config (load-theme 'catppuccin t))
 
 ;; (use-package pastelmac-theme
@@ -33,7 +33,8 @@
 (use-package all-the-icons
   :straight t)
 
-(setq-default cursor-type 'box)
+;; (setq-default cursor-type 'box)
+(setq-default cursor-type 'bar)
 (fringe-mode '(7 . 0))
 (scroll-bar-mode -1)
 (unless (eq system-type 'darwin)
@@ -51,7 +52,6 @@
  '(rainbow-delimiters-depth-5-face ((t (:foreground "Purple"))))
  '(rainbow-delimiters-depth-6-face ((t (:foreground "dark green"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "indian red"))))
- (unless (eq system-type 'darwin) '(default ((t (:inherit nil :stipple nil :inverse-video nil :box nil :strike-through nil :extend nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "nil" :family "Cascadia Mono")))))
-)
+ '(default ((t (:family "Hack" :foundry "nil" :slant normal :weight regular :height 145 :width normal)))))
 
 (provide 'theme)
