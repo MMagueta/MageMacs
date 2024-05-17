@@ -1,30 +1,30 @@
+(use-package yasnippet
+  :straight t)
+
 (use-package flycheck
   :straight t
-  :defer 5
-  :custom (flycheck-check-syntax-automatically '(save mode-enable)))
+  ;; :custom (flycheck-check-syntax-automatically '(save mode-enable))
+  )
 
 (use-package lsp-mode
   :straight t
-  :defer 5
   :hook ((lsp-mode . lsp-lens-mode)
 	 ;; Solves F# buffer out of sync
-	 (lsp-mode . (lambda () (lsp-treemacs-sync-mode -1)))
+	 ;; (lsp-mode . (lambda () (lsp-treemacs-sync-mode -1))
 	 (lsp-mode . (flymake-mode-off))))
 
 (use-package dap-mode
   :straight t
-  :defer 5
   :after lsp-mode)
 
 (require 'dap-netcore)
 
 (use-package lsp-ui
   :straight t
-  :defer 5
   :init
   (setq lsp-ui-doc-enable t)
   (setq lsp-ui-sideline-diagnostic-max-lines 7)
-  (setq lsp-ui-sideline-diagnostic-max-line-length 20)
+  (setq lsp-ui-sideline-diagnostic-max-line-length 40)
   (defun magueta/lsp-ui-doc-toggle ()
     "For some reason it is required to do at least once a call to lsp-ui-doc-show in order for this to work. Probably the problem resides on the frame created requiring some preparation before actually being used, so `frame-live-p` doesn't return nil."
     (interactive)
@@ -46,20 +46,18 @@
 	"Arguments to provide to nix-repl."
 	:type '(repeat string))
       (nix-repl)))
-  :defer 5
   :hook
   (nix-mode . lsp-deferred)
   ;; (nix-repl-mode . company-mode)
   :config
   (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
   (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection '("rnix-lsp"))
+   (make-lsp-client :new-connection (lsp-stdio-connection '("nil"))
                     :major-modes '(nix-mode)
                     :server-id 'nix)))
 
 (use-package swiper
   :straight t
-  :defer 5
   :bind
   ("\C-s" . swiper))
 
@@ -71,7 +69,6 @@
 
 (use-package windmove
   :straight t
-  :defer 5
   :bind
   ("C-c <right>" . windmove-right)
   ("C-c <left>" . windmove-left)
@@ -80,7 +77,6 @@
 
 (use-package perspective
   :straight t
-  :defer 5
   :bind (("C-x k" . persp-kill-buffer*))
   :init
   (persp-mode)
@@ -88,14 +84,12 @@
 
 (use-package move-text
   :straight t
-  :defer 5
   :bind
   ("M-<up>" . move-text-up)
   ("M-<down>" . move-text-down))
 
 (use-package corfu
   :straight t
-  :defer 5
   :custom ((corfu-auto t)
 	   (corfu-auto-defer 0.25)
 	   (corfu-min-width 15)
@@ -111,7 +105,6 @@
 	  ("\\.fsx$" .  fsharp-mode)
 	  ("\\.fsi$" .  fsharp-mode))
    :hook ((fsharp-mode . lsp-deferred))
-   :defer 5
    :bind
    (("C-c C-,"     . 'fsharp-shift-region-left)
     ("C-c C-."     . 'fsharp-shift-region-right)
@@ -125,7 +118,6 @@
 
 (use-package magit
   :straight t
-  :defer 5
   :bind
   ("C-x g" . magit-status)
   :config
@@ -134,7 +126,6 @@
 
 (use-package helm
   :straight t
-  :defer 5
   :init
   (helm-mode t)
   (set-face-attribute 'helm-selection nil
@@ -142,11 +133,11 @@
 		      :foreground (color-darken-name (face-attribute 'default :background) 100))
   :bind
   ("M-x" . helm-M-x)
+  ("M-i" . helm-imenu)
   ("C-x b" . helm-buffers-list))
 
 (use-package multiple-cursors
   :straight t
-  :defer 5
   :bind
   ("C-c m c" . mc/edit-lines)
   ("C-<" . mc/mark-previous-like-this)
@@ -154,7 +145,6 @@
 
 (use-package projectile
   :straight t
-  :defer 5
   :init
   (projectile-mode t)
   :bind-keymap
@@ -178,12 +168,10 @@
   (setq dashboard-footer-messages '("Quod oculus non vidit, nec auris audivit - I Corinthios II,IX")))
 
 (use-package transpose-frame
-  :defer 5
   :straight t)
 
 (use-package copilot
   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("dist" "*.el"))
-  :defer 5
   :bind (:map copilot-mode-map
 	      ("C-q <tab>" . copilot-accept-completion)
 	      ("C-q <right>" . copilot-next-completion)
@@ -191,53 +179,80 @@
 
 (use-package erlang
   :straight t
-  :defer 5
-  :hook (erlang-mode . lsp-deferred))
+  :hook
+  (erlang-mode . lsp-deferred)
+  (erlang-mode . yas-minor-mode))
+
+;; (use-package eglot
+;;   :straight t)
+
+;; (use-package eldoc
+;;   :straight t
+;;   :hook (eglot-mode . eldoc-mode)
+;;   :config
+;;   (eldoc-add-command 'corfu-insert))
+
+;; (use-package eldoc-box
+;;   :straight t
+;;   :hook (eldoc-mode . eldoc-box-hover-mode))
+
+(use-package lfe-mode
+  :straight t
+  :mode ("\\.lfe$" . lfe-mode)
+  :hook
+  (lfe-mode . display-line-numbers-mode)
+  (lfe-mode . corfu-mode)
+  (lfe-mode . eglot-ensure)
+  (lfe-mode . yas-minor-mode))
+
+;; (with-eval-after-load 'eglot
+;;   (add-to-list
+;;    'eglot-server-programs
+;;    '(lfe-mode . ("~/Binaries/lfe-ls/_build/prod/bin/lfe-ls"
+;;                  "--transport" "tcp" "--port" :autoport))))
 
 (use-package org-drill
-  :defer 5
   :straight t)
 
 (use-package sly
-  :defer 5
   :straight t
   :hook ((sly-mode . corfu-mode)))
 
 (use-package cider
-  :defer 5
   :straight t)
 
 (use-package clojure-mode
   :straight t
-  :defer 5
   :hook (clojure-mode . lsp-deferred))
 
 (use-package rainbow-delimiters
   :straight t
-  :defer 5
   :hook
   (lisp-mode . rainbow-delimiters-mode)
-  (emacs-lisp-mode . rainbow-delimiters-mode))
+  (emacs-lisp-mode . rainbow-delimiters-mode)
+  (lfe-mode . rainbow-delimiters-mode))
 
 (use-package smartparens
   :straight t
-  :defer 5
   :hook ((lisp-mode . smartparens-mode)
-	 (emacs-lisp-mode . smartparens-mode))
+	 (emacs-lisp-mode . smartparens-mode)
+	 (lfe-mode . smartparens-mode))
   :bind (:map smartparens-mode-map
 	      ("C-M-<right>" . 'sp-forward-sexp)
 	      ("C-M-<left>" . 'sp-backward-sexp)
 	      ("C-M-<down>" . 'sp-down-sexp)
 	      ("C-M-<up>" . 'sp-up-sexp)
 	      ("C-k" . 'sp-kill-sexp)
-	      ("M-w" . 'sp-copy-sexp)
+	      ("M-r" . 'sp-copy-sexp)
 	      ("C-M-s" . 'sp-forward-slurp-sexp)
 	      ("C-S-s" . 'sp-backward-slurp-sexp)
 	      ("C-M-b" . 'sp-forward-barf-sexp)
 	      ("C-S-b" . 'sp-backward-barf-sexp)))
 
+(use-package corfu-terminal
+  :straight t)
+
 (use-package protobuf-mode
-  :defer 5
   :straight t)
 
 (provide 'configuration)

@@ -1,9 +1,13 @@
 (require 'use-package)
 
-(use-package catppuccin-theme
+;; (use-package catppuccin-theme
+;;   :straight t
+;;   :custom catppuccin-flavor 'mocha
+;;   :config (load-theme 'catppuccin t))
+
+(use-package organic-green-theme
   :straight t
-  :custom catppuccin-flavor 'mocha
-  :config (load-theme 'catppuccin t))
+  :config (load-theme 'organic-green t))
 
 ;; (use-package pastelmac-theme
 ;;    :straight t
