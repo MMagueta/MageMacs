@@ -5,17 +5,17 @@
 ;;   :custom catppuccin-flavor 'mocha
 ;;   :config (load-theme 'catppuccin t))
 
-(use-package organic-green-theme
-  :straight t
-  :config (load-theme 'organic-green t))
+;; (use-package organic-green-theme
+;;   :straight t
+;;   :config (load-theme 'organic-green t))
 
 ;; (use-package pastelmac-theme
 ;;    :straight t
 ;;    :config (load-theme 'pastelmac t))
 
-;; (use-package color-theme-sanityinc-tomorrow
-  ;; :straight t
-  ;; :config (load-theme 'sanityinc-tomorrow-blue))
+(use-package color-theme-sanityinc-tomorrow
+  :straight t
+  :config (load-theme 'sanityinc-tomorrow-blue))
 
 ;; (use-package solarized-theme
 ;;   :straight t)

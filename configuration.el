@@ -22,9 +22,10 @@
 (use-package lsp-ui
   :straight t
   :init
-  (setq lsp-ui-doc-enable t)
-  (setq lsp-ui-sideline-diagnostic-max-lines 7)
-  (setq lsp-ui-sideline-diagnostic-max-line-length 40)
+  (setq lsp-ui-doc-enable t
+	lsp-ui-sideline-diagnostic-max-lines 7
+	lsp-ui-sideline-diagnostic-max-line-length 40
+	lsp-lens-enable nil)
   (defun magueta/lsp-ui-doc-toggle ()
     "For some reason it is required to do at least once a call to lsp-ui-doc-show in order for this to work. Probably the problem resides on the frame created requiring some preparation before actually being used, so `frame-live-p` doesn't return nil."
     (interactive)
@@ -162,8 +163,8 @@
   (setq dashboard-startup-banner "~/.emacs.d/sources/emacs.svg")
   (setq dashboard-banner-logo-title "Welcome to MageMacs, a magic GNU Emacs customization")
   (setq dashboard-items '((recents  . 5)
-			  (bookmarks . 5)
-		          (projects . 5)))
+			              (bookmarks . 5)
+		                  (projects . 5)))
   (setq dashboard-center-content t)
   (setq dashboard-footer-messages '("Quod oculus non vidit, nec auris audivit - I Corinthios II,IX")))
 
@@ -176,6 +177,21 @@
 	      ("C-q <tab>" . copilot-accept-completion)
 	      ("C-q <right>" . copilot-next-completion)
 	      ("C-q <left>" . copilot-previous-completion)))
+	      
+(use-package candle-mode
+  :after lsp-mode
+  :straight (:host github :repo "PerplexSystems/candle-mode" :files ("dist" "*.el"))
+  :hook ((candle-mode . lsp-deferred))
+  :config
+  (setq-default indent-tabs-mode nil)
+  (setq-default tab-width 4)
+  (setq indent-line-function 'insert-tab)
+  (add-to-list 'lsp-language-id-configuration
+		 '(candle-mode . "candle"))
+  (lsp-register-client
+     (make-lsp-client :new-connection (lsp-stdio-connection "millet-ls")
+                      :activation-fn (lsp-activate-on "candle")
+                      :server-id 'millet)))
 
 (use-package erlang
   :straight t
@@ -254,6 +270,15 @@
 
 (use-package protobuf-mode
   :straight t)
+
+(load-file ".emacs.d/postgres-secrets.el")
+
+(use-package sqlformat
+  :straight t
+  :ensure t
+  :custom
+  (sqlformat-command 'pgformatter)
+  (sqlformat-args '("-s2" "-g")))
 
 (provide 'configuration)
 ;;; configuration.el ends here
