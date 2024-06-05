@@ -95,6 +95,7 @@
 	   (corfu-auto-defer 0.25)
 	   (corfu-min-width 15)
 	   (corfu-max-width 70)
+	   (corfu-auto-prefix 1)
 	   (corfu-popupinfo-defer corfu-auto-defer))
   :hook ((prog-mode . corfu-mode)
 	 (corfu-mode . corfu-popupinfo-mode)
@@ -163,8 +164,8 @@
   (setq dashboard-startup-banner "~/.emacs.d/sources/emacs.svg")
   (setq dashboard-banner-logo-title "Welcome to MageMacs, a magic GNU Emacs customization")
   (setq dashboard-items '((recents  . 5)
-			              (bookmarks . 5)
-		                  (projects . 5)))
+			  (bookmarks . 5)
+		          (projects . 5)))
   (setq dashboard-center-content t)
   (setq dashboard-footer-messages '("Quod oculus non vidit, nec auris audivit - I Corinthios II,IX")))
 
