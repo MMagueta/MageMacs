@@ -272,7 +272,7 @@
 (use-package protobuf-mode
   :straight t)
 
-(load-file ".emacs.d/postgres-secrets.el")
+(load-file "~/.emacs.d/postgres-secrets.el")
 
 (use-package sqlformat
   :straight t
