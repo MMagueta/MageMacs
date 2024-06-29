@@ -15,7 +15,7 @@
 
 (use-package color-theme-sanityinc-tomorrow
   :straight t
-  :config (load-theme 'sanityinc-tomorrow-blue))
+  :config (load-theme 'sanityinc-tomorrow-blue :no-confirm))
 
 ;; (use-package solarized-theme
 ;;   :straight t)
