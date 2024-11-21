@@ -308,5 +308,9 @@
   :straight t
   :hook (tuareg-mode . lsp-deferred))
 
+(use-package eros
+  :straight t
+  :hook (emacs-lisp-mode . eros-mode))
+
 (provide 'configuration)
 ;;; configuration.el ends here
