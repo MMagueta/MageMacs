@@ -60,7 +60,8 @@
  '(rainbow-delimiters-depth-5-face ((t (:foreground "Purple"))))
  '(rainbow-delimiters-depth-6-face ((t (:foreground "dark green"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "indian red"))))
- '(default ((t (:family "Menlo" :foundry "nil" :slant normal :weight regular :height 130 :width normal))))
- )
+ (cond
+  ((eq system-type 'darwin) '(default ((t (:family "Menlo" :foundry "nil" :slant normal :weight regular :height 130 :width normal)))))
+  (t '(default ((t (:family "MesloLGS NF" :foundry "nil" :slant normal :weight regular :height 130 :width normal)))))))
 
-(provide 'theme)
+ (provide 'theme)
