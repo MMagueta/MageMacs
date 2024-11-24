@@ -101,6 +101,9 @@
 	 (corfu-mode . corfu-popupinfo-mode)
 	 (eshell-mode . corfu-mode)))
 
+(use-package corfu-terminal
+  :straight t)
+
 (use-package fsharp-mode
    :straight t
    :mode (("\\.fs$"  .  fsharp-mode)
@@ -270,9 +273,6 @@
 	      ("C-S-s" . 'sp-backward-slurp-sexp)
 	      ("C-M-b" . 'sp-forward-barf-sexp)
 	      ("C-S-b" . 'sp-backward-barf-sexp)))
-
-(use-package corfu-terminal
-  :straight t)
 
 (use-package protobuf-mode
   :straight t)
