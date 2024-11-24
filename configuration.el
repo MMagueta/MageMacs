@@ -239,24 +239,29 @@
   :hook ((sly-mode . corfu-mode)))
 
 (use-package cider
-  :straight t)
+  :straight t
+  :hook (cider-mode . corfu-mode))
 
 (use-package clojure-mode
   :straight t
-  :hook (clojure-mode . lsp-deferred))
+  :after cider
+  :hook ((clojure-mode . lsp-deferred)))
 
 (use-package rainbow-delimiters
   :straight t
   :hook
   (lisp-mode . rainbow-delimiters-mode)
   (emacs-lisp-mode . rainbow-delimiters-mode)
-  (lfe-mode . rainbow-delimiters-mode))
+  (lfe-mode . rainbow-delimiters-mode)
+  (clojure-mode . rainbow-delimiters-mode))
 
 (use-package smartparens
   :straight t
   :hook ((lisp-mode . smartparens-mode)
 	 (emacs-lisp-mode . smartparens-mode)
-	 (lfe-mode . smartparens-mode))
+	 (lfe-mode . smartparens-mode)
+	 (clojure-mode . smartparens-mode)
+	 (cider-mode . smartparens-mode))
   :bind (:map smartparens-mode-map
 	      ("C-M-<right>" . 'sp-forward-sexp)
 	      ("C-M-<left>" . 'sp-backward-sexp)
@@ -272,7 +277,8 @@
 (use-package protobuf-mode
   :straight t)
 
-(load-file "~/.emacs.d/postgres-secrets.el")
+(when (file-exists-p "~/.emacs.d/postgres-secrets.el")
+  (load-file "~/.emacs.d/postgres-secrets.el"))
 
 (use-package sqlformat
   :straight t
@@ -280,6 +286,31 @@
   :custom
   (sqlformat-command 'pgformatter)
   (sqlformat-args '("-s2" "-g")))
+
+(lsp-register-client
+  (make-lsp-client
+   :new-connection
+   (lsp-stdio-connection (list "swipl"
+                               "-g" "use_module(library(lsp_server))."
+                               "-g" "lsp_server:main"
+                               "-t" "halt"
+                               "--" "stdio"))
+   :major-modes '(prolog-mode)
+   :priority 1
+   :multi-root t
+   :server-id 'prolog-ls))
+
+(use-package c++-mode
+  :after lsp-mode
+  :hook (c++-mode . lsp-deferred))
+
+(use-package tuareg
+  :straight t
+  :hook (tuareg-mode . lsp-deferred))
+
+(use-package eros
+  :straight t
+  :hook (emacs-lisp-mode . eros-mode))
 
 (provide 'configuration)
 ;;; configuration.el ends here

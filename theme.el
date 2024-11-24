@@ -1,5 +1,9 @@
 (require 'use-package)
 
+(use-package color-theme-modern
+  :straight t
+  :config (load-theme 'snowish :no-confirm))
+
 ;; (use-package catppuccin-theme
 ;;   :straight t
 ;;   :custom catppuccin-flavor 'mocha
@@ -13,9 +17,9 @@
 ;;    :straight t
 ;;    :config (load-theme 'pastelmac t))
 
-(use-package color-theme-sanityinc-tomorrow
-  :straight t
-  :config (load-theme 'sanityinc-tomorrow-blue :no-confirm))
+;; (use-package color-theme-sanityinc-tomorrow
+;;   :straight t
+;;   :config (load-theme 'sanityinc-tomorrow-blue :no-confirm))
 
 ;; (use-package solarized-theme
 ;;   :straight t)
@@ -56,6 +60,8 @@
  '(rainbow-delimiters-depth-5-face ((t (:foreground "Purple"))))
  '(rainbow-delimiters-depth-6-face ((t (:foreground "dark green"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "indian red"))))
- '(default ((t (:family "Hack" :foundry "nil" :slant normal :weight regular :height 145 :width normal)))))
+ (cond
+  ((eq system-type 'darwin) '(default ((t (:family "Menlo" :foundry "nil" :slant normal :weight regular :height 130 :width normal)))))
+  (t '(default ((t (:family "MesloLGS NF" :foundry "nil" :slant normal :weight regular :height 130 :width normal)))))))
 
-(provide 'theme)
+ (provide 'theme)
