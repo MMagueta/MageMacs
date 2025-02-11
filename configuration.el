@@ -40,13 +40,14 @@
 (use-package nix-mode
   :straight t
   :init
-  (defun nix-repl-with-variable ()
-    (interactive)
-    (let ((variables (read-string "Nix repl variable to load: ")))
-      (defcustom nix-repl-executable-args `("repl" ,variables)
-	"Arguments to provide to nix-repl."
-	:type '(repeat string))
-      (nix-repl)))
+  (unless (eq system-type 'darwin)
+    (defun nix-repl-with-variable ()
+      (interactive)
+      (let ((variables (read-string "Nix repl variable to load: ")))
+	(defcustom nix-repl-executable-args `("repl" ,variables)
+	  "Arguments to provide to nix-repl."
+	  :type '(repeat string))
+	(nix-repl))))
   :hook
   (nix-mode . lsp-deferred)
   ;; (nix-repl-mode . company-mode)
@@ -64,9 +65,9 @@
 
 (use-package display-line-numbers
   :straight t
-  :hook ((prog-mode . (lambda () (progn
-				   (display-line-numbers-mode)
-				   (setq display-line-numbers 'relative))))))
+  :hook ((prog-mode . (lambda ()
+			(display-line-numbers-mode)
+			(setq display-line-numbers 'relative)))))
 
 (use-package windmove
   :straight t
@@ -97,7 +98,9 @@
 	   (corfu-max-width 70)
 	   (corfu-auto-prefix 1)
 	   (corfu-popupinfo-defer corfu-auto-defer))
-  :hook ((prog-mode . corfu-mode)
+  :hook ((prog-mode . (lambda ()
+			(corfu-mode)
+			(cond ((not window-system) (corfu-terminal-mode)))))
 	 (corfu-mode . corfu-popupinfo-mode)
 	 (eshell-mode . corfu-mode)))
 
@@ -105,21 +108,23 @@
   :straight t)
 
 (use-package fsharp-mode
-   :straight t
-   :mode (("\\.fs$"  .  fsharp-mode)
-	  ("\\.fsx$" .  fsharp-mode)
-	  ("\\.fsi$" .  fsharp-mode))
-   :hook ((fsharp-mode . lsp-deferred))
-   :bind
-   (("C-c C-,"     . 'fsharp-shift-region-left)
-    ("C-c C-."     . 'fsharp-shift-region-right)
-    ("C-o"         . 'fsharp-newline-and-indent)
-    ("C-c C-i"     . 'run-fsharp)
-    ("C-c C-a"     . 'fsharp-find-alternate-file)
-    ("M-h"         . 'fsharp-mark-phrase))
-   :config
-   (setq compile-command "dotnet build")
-   (setq inferior-fsharp-program "dotnet fsi --readline-"))
+  :straight t
+  :after lsp-mode
+  :mode (("\\.fs$"  .  fsharp-mode)
+	 ("\\.fsx$" .  fsharp-mode)
+	 ("\\.fsi$" .  fsharp-mode))
+  :hook ((fsharp-mode . lsp-deferred))
+  :bind
+  (("C-c C-,"     . 'fsharp-shift-region-left)
+   ("C-c C-."     . 'fsharp-shift-region-right)
+   ("C-o"         . 'fsharp-newline-and-indent)
+   ("C-c C-i"     . 'run-fsharp)
+   ("C-c C-a"     . 'fsharp-find-alternate-file)
+   ("M-h"         . 'fsharp-mark-phrase))
+  :config
+  ;; (setq lsp-fsharp-server-install-dir "/Users/mmagueta/.dotnet/tools/")
+  (setq compile-command "dotnet build")
+  (setq inferior-fsharp-program "dotnet fsi --readline-"))
 
 (use-package magit
   :straight t
@@ -181,7 +186,7 @@
 	      ("C-q <tab>" . copilot-accept-completion)
 	      ("C-q <right>" . copilot-next-completion)
 	      ("C-q <left>" . copilot-previous-completion)))
-	      
+
 (use-package candle-mode
   :after lsp-mode
   :straight (:host github :repo "PerplexSystems/candle-mode" :files ("dist" "*.el"))
@@ -225,18 +230,32 @@
   (lfe-mode . eglot-ensure)
   (lfe-mode . yas-minor-mode))
 
-;; (with-eval-after-load 'eglot
-;;   (add-to-list
-;;    'eglot-server-programs
-;;    '(lfe-mode . ("~/Binaries/lfe-ls/_build/prod/bin/lfe-ls"
-;;                  "--transport" "tcp" "--port" :autoport))))
+(with-eval-after-load 'eglot
+  (add-to-list
+   'eglot-server-programs
+   '(lfe-mode . ("/User/mmagueta/Binary/lfe-ls/_build/prod/bin/lfe-ls"
+                 "--transport" "tcp" "--port" :autoport))))
 
 (use-package org-drill
   :straight t)
 
 (use-package sly
   :straight t
-  :hook ((sly-mode . corfu-mode)))
+  :hook ((sly-mode . corfu-mode)
+	 (sly-mode . smartparens-mode))
+  :init
+  ;; (setq sly-lisp-implementations
+	;; '((sbcl ("/etc/profiles/per-user/mmagueta/bin/sbcl"))
+  ;; (ecl ("/etc/profiles/per-user/mmagueta/bin/ecl"))))
+  (defun sly-eval-last-expression-eros ()
+    (interactive)
+    (cl-destructuring-bind (output value)
+	(sly-eval `(swank:eval-and-grab-output ,(sly-last-expression)))
+      (eros--make-result-overlay (concat output value)
+	:where (point)
+	:duration eros-eval-result-duration)))
+  :bind (:map sly-mode-map
+	      ("C-x C-e" . sly-eval-last-expression-eros)))
 
 (use-package cider
   :straight t
@@ -277,8 +296,50 @@
 (use-package protobuf-mode
   :straight t)
 
-(when (file-exists-p "~/.emacs.d/postgres-secrets.el")
-  (load-file "~/.emacs.d/postgres-secrets.el"))
+;; (when (file-exists-p "~/.emacs.d/postgres-secrets.el")
+;;   (load-file "~/.emacs.d/postgres-secrets.el"))
+
+(use-package emacs
+  :hook (sql-mode . (lambda ()
+		      (add-to-list 'sql-connection-alist
+				   '(dev (sql-product 'postgres)
+					 (sql-port 5433)
+					 (sql-user    "admin")
+					 (sql-server "localhost")
+					 (sql-database   "supabase")))
+		      (add-to-list 'sql-connection-alist
+				   '(supabase-local (sql-product 'postgres)
+						    (sql-port 54322)
+						    (sql-user    "postgres")
+						    (sql-server "localhost")
+						    (sql-database   "postgres"))))))
+
+;; (with-eval-after-load 'sql-mode
+;;   (progn
+;;     (add-to-list 'sql-connection-alist
+;; 		 '(supabase-local (sql-product 'postgres)
+;; 				  (sql-port 54322)
+;; 				  (sql-user    "postgres")
+;; 				  (sql-server "localhost")
+;; 				  (sql-database   "postgres")))
+;;     (add-to-list 'sql-connection-alist
+;; 		 '(dev (sql-product 'postgres)
+;; 		       (sql-port 5433)
+;; 		       (sql-user    "admin")
+;; 		       (sql-server "localhost")
+;; 		       (sql-database   "supabase")))
+;;     (add-to-list 'sql-connection-alist
+;; 		 '(supabase-prod (sql-product  'postgres)
+;; 				 (sql-port     6543)
+;; 				 (sql-user     "postgres.lzrwqzryybmmzdjyrxtf")
+;; 				 (sql-server   "aws-0-us-east-1.pooler.supabase.com")
+;; 				 (sql-database "postgres")))
+;;     (setq lsp-sqls-workspace-config-path nil)
+;;     ;; (setq lsp-sqls-connections
+;; 	  ;; '(((driver . "postgresql") (dataSourceName . "host=127.0.0.1 port=54322 user=postgres password=postgres dbname=postgres sslmode=disable"))))
+;;     ;; (setq lsp-sqls-connections
+;; 	  ;; '(((driver . "postgresql") (dataSourceName . "host=127.0.0.1 port=5433 user=admin password=admin dbname=supabase sslmode=disable"))))
+;;     ))
 
 (use-package sqlformat
   :straight t
@@ -311,6 +372,19 @@
 (use-package eros
   :straight t
   :hook (emacs-lisp-mode . eros-mode))
+
+(use-package pgmacs
+  :straight (:host github :repo "MMagueta/pgmacs" :branch "add-script-support" :files ("dist" "*.el")))
+
+(use-package envrc
+  :straight t
+  :hook (after-init . envrc-global-mode))
+
+(use-package direnv
+  :straight t)
+
+(use-package projectile-direnv
+  :straight t)
 
 (provide 'configuration)
 ;;; configuration.el ends here

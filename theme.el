@@ -2,7 +2,8 @@
 
 (use-package color-theme-modern
   :straight t
-  :config (load-theme 'snowish :no-confirm))
+  ;; :config (load-theme 'snowish :no-confirm))
+  :config (load-theme 'deep-blue :no-confirm))
 
 ;; (use-package catppuccin-theme
 ;;   :straight t
@@ -61,7 +62,7 @@
  '(rainbow-delimiters-depth-6-face ((t (:foreground "dark green"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "indian red"))))
  (cond
-  ((eq system-type 'darwin) '(default ((t (:family "Menlo" :foundry "nil" :slant normal :weight regular :height 130 :width normal)))))
+  ((eq system-type 'darwin) '(default ((t (:family "Menlo" :foundry "nil" :slant normal :weight regular :height 180 :width normal)))))
   (t '(default ((t (:family "MesloLGS NF" :foundry "nil" :slant normal :weight regular :height 130 :width normal)))))))
 
  (provide 'theme)
