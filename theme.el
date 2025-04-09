@@ -3,7 +3,12 @@
 (use-package color-theme-modern
   :straight t
   ;; :config (load-theme 'snowish :no-confirm))
-  :config (load-theme 'deep-blue :no-confirm))
+  ;; :config (load-theme 'deep-blue :no-confirm))
+  :config (load-theme 'marquardt :no-confirm)
+  :init (if (seq-find (lambda (x) (eq 'marquardt x)) custom-enabled-themes)
+	    (set-face-attribute 'helm-selection nil
+				:background (color-lighten-name (face-attribute 'default :foreground) 50)
+				:foreground (color-darken-name (face-attribute 'default :background) 40))))
 
 ;; (use-package catppuccin-theme
 ;;   :straight t
@@ -54,13 +59,13 @@
 (display-time-mode +1)
 
 (custom-set-faces
- '(rainbow-delimiters-depth-1-face ((t (:foreground "systemTealColor"))))
- '(rainbow-delimiters-depth-2-face ((t (:foreground "Brown"))))
- '(rainbow-delimiters-depth-3-face ((t (:foreground "Blue"))))
- '(rainbow-delimiters-depth-4-face ((t (:foreground "Orange"))))
- '(rainbow-delimiters-depth-5-face ((t (:foreground "Purple"))))
- '(rainbow-delimiters-depth-6-face ((t (:foreground "dark green"))))
- '(rainbow-delimiters-depth-9-face ((t (:foreground "indian red"))))
+ '(rainbow-delimiters-depth-2-face ((t (:foreground "indian red"))))
+ '(rainbow-delimiters-depth-6-face ((t (:foreground "Brown"))))
+ '(rainbow-delimiters-depth-5-face ((t (:foreground "Blue"))))
+ '(rainbow-delimiters-depth-3-face ((t (:foreground "Orange"))))
+ '(rainbow-delimiters-depth-1-face ((t (:foreground "Purple"))))
+ '(rainbow-delimiters-depth-4-face ((t (:foreground "dark green"))))
+ '(rainbow-delimiters-depth-9-face ((t (:foreground "systemTealColor"))))
  (cond
   ((eq system-type 'darwin) '(default ((t (:family "Menlo" :foundry "nil" :slant normal :weight regular :height 180 :width normal)))))
   (t '(default ((t (:family "MesloLGS NF" :foundry "nil" :slant normal :weight regular :height 130 :width normal)))))))

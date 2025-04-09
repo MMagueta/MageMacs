@@ -15,7 +15,11 @@
 
 (use-package dap-mode
   :straight t
-  :after lsp-mode)
+  :after lsp-mode
+  :bind (("C-c M-n" . dap-next)
+         ("C-c M-s" . dap-step-in)
+         ("C-c M-a" . dap-step-out)
+         ("C-c M-w" . dap-continue)))
 
 (require 'dap-netcore)
 
@@ -100,7 +104,10 @@
 	   (corfu-popupinfo-defer corfu-auto-defer))
   :hook ((prog-mode . (lambda ()
 			(corfu-mode)
-			(cond ((not window-system) (corfu-terminal-mode)))))
+			(unless window-system (corfu-terminal-mode))))
+	 (sql-mode . (lambda ()
+			(corfu-mode -1)
+			(unless window-system (corfu-terminal-mode -1))))
 	 (corfu-mode . corfu-popupinfo-mode)
 	 (eshell-mode . corfu-mode)))
 
@@ -208,6 +215,13 @@
   (erlang-mode . lsp-deferred)
   (erlang-mode . yas-minor-mode))
 
+
+;; (use-package eglot
+;;   :straight t
+;;   :bind (:map eglot-mode-map
+;; 	      ("C-c C-d" . eglot-help-at-point)
+;; 	      ("C-c C-r" . eglot-code-actions)))
+
 ;; (use-package eglot
 ;;   :straight t)
 
@@ -296,23 +310,9 @@
 (use-package protobuf-mode
   :straight t)
 
-;; (when (file-exists-p "~/.emacs.d/postgres-secrets.el")
-;;   (load-file "~/.emacs.d/postgres-secrets.el"))
-
-(use-package emacs
-  :hook (sql-mode . (lambda ()
-		      (add-to-list 'sql-connection-alist
-				   '(dev (sql-product 'postgres)
-					 (sql-port 5433)
-					 (sql-user    "admin")
-					 (sql-server "localhost")
-					 (sql-database   "supabase")))
-		      (add-to-list 'sql-connection-alist
-				   '(supabase-local (sql-product 'postgres)
-						    (sql-port 54322)
-						    (sql-user    "postgres")
-						    (sql-server "localhost")
-						    (sql-database   "postgres"))))))
+(let ((secrets (concat (getenv "HOME") "/.emacs.d/secrets.el")))
+  (when (file-exists-p secrets)
+    (load-file secrets)))
 
 ;; (with-eval-after-load 'sql-mode
 ;;   (progn
@@ -367,7 +367,12 @@
 
 (use-package tuareg
   :straight t
-  :hook (tuareg-mode . lsp-deferred))
+  :after dap-mode
+  :hook (tuareg-mode . lsp-deferred)
+  :config
+  (require 'dap-mode)
+  (require 'dap-codelldb)
+  (require 'dap-ocaml))
 
 (use-package eros
   :straight t
