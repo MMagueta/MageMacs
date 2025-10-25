@@ -10,4 +10,4 @@ straight/
 eshell/
 .lsp-session*
 .dap*
-postgres-secrets.el
+secrets.el

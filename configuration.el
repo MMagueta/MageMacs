@@ -30,7 +30,7 @@
 	lsp-ui-sideline-diagnostic-max-lines 7
 	lsp-ui-sideline-diagnostic-max-line-length 40
 	lsp-lens-enable nil)
-  (defun magueta/lsp-ui-doc-toggle ()
+  (defun magemacs/lsp-ui-doc-toggle ()
     "For some reason it is required to do at least once a call to lsp-ui-doc-show in order for this to work. Probably the problem resides on the frame created requiring some preparation before actually being used, so `frame-live-p` doesn't return nil."
     (interactive)
     (let ((frame (lsp-ui-doc--get-frame)))
@@ -39,22 +39,13 @@
 		(t (lsp-ui-doc-show)))
 	(message "Hover with the mouse or call `lsp-ui-doc-show` over some obect first. For why, read doc string."))))
   :bind
-  (("s-?" . 'magueta/lsp-ui-doc-toggle)))
+  (("s-?" . 'magemacs/lsp-ui-doc-toggle)))
 
 (use-package nix-mode
   :straight t
-  :init
-  (unless (eq system-type 'darwin)
-    (defun nix-repl-with-variable ()
-      (interactive)
-      (let ((variables (read-string "Nix repl variable to load: ")))
-	(defcustom nix-repl-executable-args `("repl" ,variables)
-	  "Arguments to provide to nix-repl."
-	  :type '(repeat string))
-	(nix-repl))))
   :hook
   (nix-mode . lsp-deferred)
-  ;; (nix-repl-mode . company-mode)
+  (nix-repl-mode . corfu-mode)
   :config
   (add-to-list 'lsp-language-id-configuration '(nix-mode . "nix"))
   (lsp-register-client
@@ -106,8 +97,8 @@
 			(corfu-mode)
 			(unless window-system (corfu-terminal-mode))))
 	 (sql-mode . (lambda ()
-			(corfu-mode -1)
-			(unless window-system (corfu-terminal-mode -1))))
+			(corfu-mode)
+			(unless window-system (corfu-terminal-mode))))
 	 (corfu-mode . corfu-popupinfo-mode)
 	 (eshell-mode . corfu-mode)))
 
@@ -145,9 +136,14 @@
   :straight t
   :init
   (helm-mode t)
-  (set-face-attribute 'helm-selection nil
-		      :background (color-lighten-name (face-attribute 'default :foreground) 50)
-		      :foreground (color-darken-name (face-attribute 'default :background) 100))
+  (if (seq-find (lambda (x) (or (eq 'marquardt x)
+				(eq 'feng-shui x))) custom-enabled-themes)
+      (set-face-attribute 'helm-selection nil
+			  :background (color-lighten-name (face-attribute 'default :foreground) 50)
+			  :foreground (color-darken-name (face-attribute 'default :background) 40))
+    (set-face-attribute 'helm-selection nil
+			:background (color-lighten-name (face-attribute 'default :foreground) 50)
+			:foreground (color-darken-name (face-attribute 'default :background) 100)))
   :bind
   ("M-x" . helm-M-x)
   ("M-i" . helm-imenu)
@@ -242,12 +238,74 @@
   (lfe-mode . display-line-numbers-mode)
   (lfe-mode . corfu-mode)
   (lfe-mode . eglot-ensure)
-  (lfe-mode . yas-minor-mode))
+  (lfe-mode . yas-minor-mode)
+  :init
+  (defvar lfe-mode-syntax-table
+    (let ((table (copy-syntax-table lisp-mode-syntax-table)))
+      ;; Like scheme we allow [ ... ] as alternate parentheses.
+      (modify-syntax-entry ?\[ "(]  " table)
+      (modify-syntax-entry ?\] ")[  " table)
+      ;; ":" character should be used as punctuation to separate symbols
+      (modify-syntax-entry ?: "." table)
+      table)
+    "Syntax table in use in Lisp Flavoured Erlang mode buffers.")
+  (defun find-rebar-config-root ()
+    "Find the nearest parent directory containing 'rebar.config'.
+Starts from `default-directory`. Returns the path or nil if not found."
+    (let ((dir (file-name-as-directory default-directory)))
+      (catch 'found
+(while dir
+          (if (file-exists-p (expand-file-name "rebar.config" dir))
+              (throw 'found dir)
+            (let ((parent (file-name-directory (directory-file-name dir))))
+              (if (or (null parent) (equal parent dir))
+                  (setq dir nil) ;; reached root
+(setq dir parent)))))
+nil)))
+  (defvar inferior-lfe-program
+    ;; (concat "rebar3 --config " (find-rebar-config-root) "rebar.config lfe repl")
+    ;; (setenv "REBAR_CONFIG" (concat (find-rebar-config-root)
+    ;; "rebar.config"))
+    ;; "rebar3 lfe repl")
+    ;; "rebar3 --config /home/mmagueta/Projects/Nekoma/mahjong/server/rebar.config lfe repl"
+    "rebar3")
+  (defvar inferior-lfe-program-options '("lfe" "repl"))
+  (defun inferior-lfe ()
+    "Run an inferior LFE process, input and output via a buffer `*inferior-lfe*'.
+Start the shell `inferior-lfe-program' `inferior-lfe-program-options' -env TERM vt100.
+If a rebar project is found you are prompted (see `inferior-lfe-check-if-rebar-project')
+and can choose to run lfe using rebar3."
+    (interactive)
+    (let ((prog inferior-lfe-program)
+          (opts inferior-lfe-program-options)
+          (rebar-project-root (inferior-lfe--is-rebar-project))
+          (mix-project-root (inferior-lfe--is-mix-project)))
+      (cond
+       ((and inferior-lfe-check-if-rebar-project
+             rebar-project-root
+             (inferior-lfe--start-rebar-lfe))
+(setq prog "sh"
+              opts (list "-i" "-c" (concat "TERM=\"vt100\";"
+                                           (format "cd %s" rebar-project-root)
+                                           "; rebar3 lfe repl"))))
+       ((and inferior-lfe-check-if-mix-project
+             mix-project-root
+             (inferior-lfe--start-mix-lfe))
+(setq prog "sh"
+              opts (list "-i" "-c" (concat "TERM=\"vt100\";"
+                                           (format "cd %s" mix-project-root)
+                                           "; mix lfe repl")))))
+      (unless (comint-check-proc "*inferior-lfe*")
+(set-buffer (apply (function make-comint)
+                           "inferior-lfe" prog nil opts))
+(inferior-lfe-mode))
+      (setq inferior-lfe-buffer "*inferior-lfe*")
+      (pop-to-buffer "*inferior-lfe*"))))
 
 (with-eval-after-load 'eglot
   (add-to-list
    'eglot-server-programs
-   '(lfe-mode . ("/User/mmagueta/Binary/lfe-ls/_build/prod/bin/lfe-ls"
+   `(lfe-mode . (,(concat (getenv "HOME") "/Binary/lfe-ls/_build/prod/bin/lfe-ls")
                  "--transport" "tcp" "--port" :autoport))))
 
 (use-package org-drill
@@ -314,33 +372,6 @@
   (when (file-exists-p secrets)
     (load-file secrets)))
 
-;; (with-eval-after-load 'sql-mode
-;;   (progn
-;;     (add-to-list 'sql-connection-alist
-;; 		 '(supabase-local (sql-product 'postgres)
-;; 				  (sql-port 54322)
-;; 				  (sql-user    "postgres")
-;; 				  (sql-server "localhost")
-;; 				  (sql-database   "postgres")))
-;;     (add-to-list 'sql-connection-alist
-;; 		 '(dev (sql-product 'postgres)
-;; 		       (sql-port 5433)
-;; 		       (sql-user    "admin")
-;; 		       (sql-server "localhost")
-;; 		       (sql-database   "supabase")))
-;;     (add-to-list 'sql-connection-alist
-;; 		 '(supabase-prod (sql-product  'postgres)
-;; 				 (sql-port     6543)
-;; 				 (sql-user     "postgres.lzrwqzryybmmzdjyrxtf")
-;; 				 (sql-server   "aws-0-us-east-1.pooler.supabase.com")
-;; 				 (sql-database "postgres")))
-;;     (setq lsp-sqls-workspace-config-path nil)
-;;     ;; (setq lsp-sqls-connections
-;; 	  ;; '(((driver . "postgresql") (dataSourceName . "host=127.0.0.1 port=54322 user=postgres password=postgres dbname=postgres sslmode=disable"))))
-;;     ;; (setq lsp-sqls-connections
-;; 	  ;; '(((driver . "postgresql") (dataSourceName . "host=127.0.0.1 port=5433 user=admin password=admin dbname=supabase sslmode=disable"))))
-;;     ))
-
 (use-package sqlformat
   :straight t
   :ensure t
@@ -378,8 +409,8 @@
   :straight t
   :hook (emacs-lisp-mode . eros-mode))
 
-(use-package pgmacs
-  :straight (:host github :repo "MMagueta/pgmacs" :branch "add-script-support" :files ("dist" "*.el")))
+;; (use-package pgmacs
+  ;; :straight (:host github :repo "MMagueta/pgmacs" :branch "add-script-support" :files ("dist" "*.el")))
 
 (use-package envrc
   :straight t
@@ -390,6 +421,43 @@
 
 (use-package projectile-direnv
   :straight t)
+
+(use-package org-super-agenda
+  :straight t
+  :after org
+  :custom
+  (org-agenda-custom-commands
+   '(("c" "Super Agenda"
+      ((agenda "" ((org-super-agenda-groups
+                    '((:name "Today"
+                             :time-grid t
+                             :date today
+                             :todo "TODAY")
+                      (:name "Due soon"
+                             :deadline future)
+                      (:name "Overdue"
+                             :deadline past)
+                      (:name "Important"
+                             :priority "A")))))))))
+  (org-agenda-files `(,(concat (getenv "HOME") "/.emacs.d/agenda.org")))
+  :config
+  (org-super-agenda-mode))
+
+(use-package typescript-mode
+  :straight t)
+
+(defun c-mode-compile-bind ()
+  "Bind C-c C-c to `compile' in C mode."
+  (local-set-key (kbd "C-c C-c") #'compile))
+
+(add-hook 'c-mode-hook #'c-mode-compile-bind)
+(add-hook 'c-mode-hook #'lsp-deferred)
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection '("denon" "lsp"))
+                  :activation-fn (lsp-activate-on "typescript")
+                  :priority -1
+                  :server-id 'ts-ls))
 
 (provide 'configuration)
 ;;; configuration.el ends here

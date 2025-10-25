@@ -1,14 +1,13 @@
 (require 'use-package)
 
 (use-package color-theme-modern
+  :after helm
   :straight t
   ;; :config (load-theme 'snowish :no-confirm))
   ;; :config (load-theme 'deep-blue :no-confirm))
-  :config (load-theme 'marquardt :no-confirm)
-  :init (if (seq-find (lambda (x) (eq 'marquardt x)) custom-enabled-themes)
-	    (set-face-attribute 'helm-selection nil
-				:background (color-lighten-name (face-attribute 'default :foreground) 50)
-				:foreground (color-darken-name (face-attribute 'default :background) 40))))
+  ;; :config (load-theme 'marquardt :no-confirm))
+  ;; :config (load-theme 'resolve :no-confirm))
+  :config (load-theme 'feng-shui :no-confirm))
 
 ;; (use-package catppuccin-theme
 ;;   :straight t
@@ -49,7 +48,9 @@
 
 ;; (setq-default cursor-type 'box)
 (setq-default cursor-type 'bar)
-(fringe-mode '(7 . 0))
+;; (x . y) means the left and right fringes
+;; put left on 7 at least for debug
+(fringe-mode '(0 . 0))
 (scroll-bar-mode -1)
 (unless (eq system-type 'darwin)
   (menu-bar-mode -1))
@@ -67,7 +68,7 @@
  '(rainbow-delimiters-depth-4-face ((t (:foreground "dark green"))))
  '(rainbow-delimiters-depth-9-face ((t (:foreground "systemTealColor"))))
  (cond
-  ((eq system-type 'darwin) '(default ((t (:family "Menlo" :foundry "nil" :slant normal :weight regular :height 180 :width normal)))))
+  ((eq system-type 'darwin) '(default ((t (:family "Menlo" :foundry "nil" :slant normal :weight regular :height 165 :width normal)))))
   (t '(default ((t (:family "MesloLGS NF" :foundry "nil" :slant normal :weight regular :height 130 :width normal)))))))
 
  (provide 'theme)

@@ -12,6 +12,7 @@
 (define-key emacs-lisp-mode-map (kbd "C-c C-c") 'emacs-lisp/eval-entire-expression)
 (global-set-key (kbd "s-e") 'eshell)
 (global-set-key (kbd "s-t") 'transpose-frame)
+(pixel-scroll-precision-mode +1)
 
 (use-package comint
   :after fsharp-mode
