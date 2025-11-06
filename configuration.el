@@ -172,7 +172,10 @@
   (dashboard-setup-startup-hook)
   (setq dashboard-center-content t)
   ;; (setq dashboard-set-file-icons t)
-  (setq dashboard-startup-banner "~/.emacs.d/sources/emacs.svg")
+  ;; (setq dashboard-startup-banner "~/.emacs.d/sources/emacs.svg")
+  (setq dashboard-startup-banner "~/.emacs.d/sources/magemacs.png")
+  (setq dashboard-image-banner-max-height 300)
+  (setq dashboard-image-banner-max-width 500)
   (setq dashboard-banner-logo-title "Welcome to MageMacs, a magic GNU Emacs customization")
   (setq dashboard-items '((recents  . 5)
 			  (bookmarks . 5)
@@ -458,6 +461,9 @@ and can choose to run lfe using rebar3."
                   :activation-fn (lsp-activate-on "typescript")
                   :priority -1
                   :server-id 'ts-ls))
+
+(use-package rust-mode
+  :straight t)
 
 (provide 'configuration)
 ;;; configuration.el ends here
