@@ -212,8 +212,29 @@
   :straight t
   :hook
   (erlang-mode . lsp-deferred)
-  (erlang-mode . yas-minor-mode))
-
+  (erlang-mode . yas-minor-mode)
+  (erlang-mode . erlang-set-project-root)
+  :config
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection '("elp" "server"))
+                    :major-modes '(erlang-mode)
+                    :priority 0
+                    :server-id 'erlang-language-platform))
+  (setq inferior-erlang-machine "rebar3")
+  (setq inferior-erlang-machine-options '("shell"))
+  (setq inferior-erlang-shell-type nil)
+  (defun erlang-set-project-root ()
+    "Set `default-directory` to the parent dir containing `rebar.config` or `rebar.config.script`, if found."
+    (when (derived-mode-p 'erlang-mode)
+      (let* ((start (or (buffer-file-name) default-directory))
+             (proj-root
+              (locate-dominating-file
+               start
+               (lambda (dir)
+         (or (file-exists-p (expand-file-name "rebar.config" dir))
+                     (file-exists-p (expand-file-name "rebar.config.script" dir)))))))
+    (when proj-root
+      (setq-local default-directory proj-root))))))
 
 ;; (use-package eglot
 ;;   :straight t
