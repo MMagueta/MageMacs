@@ -11,7 +11,9 @@
   :hook ((lsp-mode . lsp-lens-mode)
 	 ;; Solves F# buffer out of sync
 	 ;; (lsp-mode . (lambda () (lsp-treemacs-sync-mode -1))
-	 (lsp-mode . (flymake-mode-off))))
+	 (lsp-mode . (lambda () (flymake-mode -1))))
+  :custom
+  (lsp-completion-provider :none))
 
 (use-package dap-mode
   :straight t
@@ -120,7 +122,20 @@
    ("C-c C-a"     . 'fsharp-find-alternate-file)
    ("M-h"         . 'fsharp-mark-phrase))
   :config
-  ;; (setq lsp-fsharp-server-install-dir "/Users/mmagueta/.dotnet/tools/")
+  (require 'lsp-fsharp)
+  (setq lsp-fsharp-use-dotnet-tool-for-fsac nil)
+  (setq lsp-fsharp-use-dotnet-local-tool nil)
+  ;; advice to fix the look for fsac download upon starting lsp
+  (with-eval-after-load 'lsp-fsharp
+    (defun magemacs/lsp-fsharp--fsac-install (_client callback error-callback update?)
+      "Install/update fsautocomplete language server using `dotnet tool'."
+      (lsp-async-start-process
+       callback
+       error-callback
+       "dotnet" "tool" (if update? "update" "install")
+       (unless lsp-fsharp-use-dotnet-local-tool "-g")
+       "fsautocomplete"))
+    (advice-add 'lsp-fsharp--fsac-install :override #'magemacs/lsp-fsharp--fsac-install))
   (setq compile-command "dotnet build")
   (setq inferior-fsharp-program "dotnet fsi --readline-"))
 
@@ -485,6 +500,15 @@ and can choose to run lfe using rebar3."
 
 (use-package rust-mode
   :straight t)
+
+(use-package lsp-mssql
+  :straight t)
+
+(setq lsp-mssql-connections
+      [(:server "localhost"
+                :database "advent"
+                :user "sa"
+                :password "reallyStrongPwd123")])
 
 (provide 'configuration)
 ;;; configuration.el ends here

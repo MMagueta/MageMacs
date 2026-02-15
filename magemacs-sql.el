@@ -1,5 +1,8 @@
 ;;; magemacs-sql.el --- MageMacs SQL integration -*- lexical-binding: t; -*-
 
+(with-eval-after-load 'sql
+  (setq sql-postgres-options '("--no-psqlrc" "--pset=pager=off")))
+
 (defun magemacs/lsp-sqls-from-connection-alist ()
   "Configure `lsp-sqls-connections` from `sql-connection-alist`."
   (require 'lsp-sqls)

@@ -3,6 +3,9 @@
 (setq create-lockfiles nil)
 (setq backup-directory-alist `(("." . "~/.saves")))
 
+(setenv "TERM" "xterm-256color")
+(setq comint-terminfo-terminal "xterm-256color")
+
 (defun emacs-lisp/eval-entire-expression ()
   (interactive)
   (forward-sentence)
