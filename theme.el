@@ -3,11 +3,11 @@
 (use-package color-theme-modern
   :after helm
   :straight t
-  ;; :config (load-theme 'snowish :no-confirm))
+  :config (load-theme 'snowish :no-confirm))
   ;; :config (load-theme 'deep-blue :no-confirm))
   ;; :config (load-theme 'marquardt :no-confirm))
   ;; :config (load-theme 'resolve :no-confirm))
-  :config (load-theme 'feng-shui :no-confirm))
+  ;; :config (load-theme 'feng-shui :no-confirm))
 
 ;; (use-package catppuccin-theme
 ;;   :straight t

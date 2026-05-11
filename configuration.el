@@ -107,11 +107,11 @@
 
 (use-package fsharp-mode
   :straight t
-  :after lsp-mode
+  ;; :after lsp-mode
   :mode (("\\.fs$"  .  fsharp-mode)
 	 ("\\.fsx$" .  fsharp-mode)
 	 ("\\.fsi$" .  fsharp-mode))
-  :hook ((fsharp-mode . lsp-deferred))
+  :hook ((fsharp-mode . eglot-ensure))
   :bind
   (("C-c C-,"     . 'fsharp-shift-region-left)
    ("C-c C-."     . 'fsharp-shift-region-right)
@@ -120,7 +120,7 @@
    ("C-c C-a"     . 'fsharp-find-alternate-file)
    ("M-h"         . 'fsharp-mark-phrase))
   :config
-  ;; (setq lsp-fsharp-server-install-dir "/Users/mmagueta/.dotnet/tools/")
+  ;; (setq lsp-fsharp-server-install-dir "/Users/mmagueta/.dotnet/tools/fsautocomplete")
   (setq compile-command "dotnet build")
   (setq inferior-fsharp-program "dotnet fsi --readline-"))
 
@@ -237,23 +237,22 @@
       (setq-local default-directory proj-root))))))
 
 ;; (use-package eglot
-;;   :straight t
 ;;   :bind (:map eglot-mode-map
 ;; 	      ("C-c C-d" . eglot-help-at-point)
 ;; 	      ("C-c C-r" . eglot-code-actions)))
 
-;; (use-package eglot
-;;   :straight t)
+;; (use-package eglot-fsharp
+  ;; :straight t)
 
-;; (use-package eldoc
-;;   :straight t
-;;   :hook (eglot-mode . eldoc-mode)
-;;   :config
-;;   (eldoc-add-command 'corfu-insert))
+(use-package eldoc
+  :straight t
+  :hook (eglot-mode . eldoc-mode)
+  :config
+  (eldoc-add-command 'corfu-insert))
 
-;; (use-package eldoc-box
-;;   :straight t
-;;   :hook (eldoc-mode . eldoc-box-hover-mode))
+(use-package eldoc-box
+  :straight t
+  :hook (eldoc-mode . eldoc-box-hover-mode))
 
 (use-package lfe-mode
   :straight t
@@ -332,6 +331,17 @@ and can choose to run lfe using rebar3."
    `(lfe-mode . (,(concat (getenv "HOME") "/Binary/lfe-ls/_build/prod/bin/lfe-ls")
                  "--transport" "tcp" "--port" :autoport))))
 
+;; (with-eval-after-load 'eglot
+;;   (add-to-list
+;;    'eglot-server-programs
+;;    `(fsharp-mode . (,(concat (getenv "HOME") "/.dotnet/tools/fsautocomplete")
+;;                  ))))
+
+;; (use-package eglot-fsharp
+;;   :after fsharp-mode
+;;   :config
+;;   (add-hook 'fsharp-mode-hook #'eglot-ensure))
+
 (use-package org-drill
   :straight t)
 
@@ -389,8 +399,8 @@ and can choose to run lfe using rebar3."
 	      ("C-M-b" . 'sp-forward-barf-sexp)
 	      ("C-S-b" . 'sp-backward-barf-sexp)))
 
-(use-package protobuf-mode
-  :straight t)
+;; (use-package protobuf-mode
+;;   :straight t)
 
 (let ((secrets (concat (getenv "HOME") "/.emacs.d/secrets.el")))
   (when (file-exists-p secrets)
@@ -467,9 +477,6 @@ and can choose to run lfe using rebar3."
   :config
   (org-super-agenda-mode))
 
-(use-package typescript-mode
-  :straight t)
-
 (defun c-mode-compile-bind ()
   "Bind C-c C-c to `compile' in C mode."
   (local-set-key (kbd "C-c C-c") #'compile))
@@ -482,9 +489,6 @@ and can choose to run lfe using rebar3."
                   :activation-fn (lsp-activate-on "typescript")
                   :priority -1
                   :server-id 'ts-ls))
-
-(use-package rust-mode
-  :straight t)
 
 (provide 'configuration)
 ;;; configuration.el ends here
